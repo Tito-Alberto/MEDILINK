@@ -81,7 +81,6 @@
                 <nav class="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex md:justify-self-center">
                     <a class="hover:text-slate-900" href="#ofertas">Ofertas</a>
                     <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farmácias</a>
-                    <a class="hover:text-slate-900" href="#como">Como funciona</a>
                     <a class="hover:text-slate-900" href="/produtos">Catálogo</a>
                 </nav>
                 <form class="w-full md:w-[440px] md:justify-self-end" action="/produtos" method="GET">
@@ -175,7 +174,6 @@
                     </a>
                     <a class="hover:text-slate-900" href="#ofertas">Ofertas</a>
                     <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farmácias</a>
-                    <a class="hover:text-slate-900" href="#como">Como funciona</a>
                     <a class="hover:text-slate-900" href="/produtos">Catálogo</a>
                     @auth
                         @if (auth()->user()->pharmacy)
@@ -518,67 +516,6 @@
                 </div>
             </section>
 
-            <section id="como" class="mx-auto mt-16 max-w-6xl">
-                <div class="flex flex-wrap items-end justify-between gap-4">
-                    <div>
-                        <p class="text-sm uppercase tracking-[0.2em] text-lime-700">Como funciona</p>
-                        <h2 class="brand-title text-4xl text-slate-900">Fluxo completo para admin, Farmácias e público</h2>
-                    </div>
-                </div>
-                    <div class="mt-8 grid gap-6 md:grid-cols-3">
-                        <div class="glass rounded-3xl p-6">
-                            <div class="flex items-center">
-                                @auth
-                                    @if (auth()->user()->is_admin)
-                                        <x-admin-approval-bell :notifications="$adminHeaderNotifications" />
-                                    @else
-                                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-sky-300 bg-sky-100 text-sky-700">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                                <path d="M3 21h18"></path>
-                                                <path d="M5 21V7l7-4 7 4v14"></path>
-                                                <path d="M9 10h6"></path>
-                                                <path d="M9 14h6"></path>
-                                            </svg>
-                                        </span>
-                                    @endif
-                                @else
-                                    <span class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-sky-300 bg-sky-100 text-sky-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                            <path d="M3 21h18"></path>
-                                            <path d="M5 21V7l7-4 7 4v14"></path>
-                                            <path d="M9 10h6"></path>
-                                            <path d="M9 14h6"></path>
-                                        </svg>
-                                    </span>
-                                @endauth
-                            </div>
-                            <p class="mt-3 text-xl font-semibold text-slate-900">Controle total</p>
-                        <ul class="mt-4 space-y-2 text-sm text-slate-600">
-                            <li>Valida novas Farmácias</li>
-                            <li>Destaca ofertas e campanhas</li>
-                            <li>Gerencia categorias e banners</li>
-                        </ul>
-                    </div>
-                    <div class="glass rounded-3xl p-6">
-                        <p class="text-sm text-lime-700">Farmácias</p>
-                        <p class="mt-3 text-xl font-semibold text-slate-900">Venda com autonomia</p>
-                        <ul class="mt-4 space-y-2 text-sm text-slate-600">
-                            <li>Cadastro rápido de produtos</li>
-                            <li>Precificacao e estoque online</li>
-                            <li>Recebe pedidos e confirma entrega</li>
-                        </ul>
-                    </div>
-                    <div class="glass rounded-3xl p-6">
-                        <p class="text-sm text-lime-700">Público</p>
-                        <p class="mt-3 text-xl font-semibold text-slate-900">Compra segura</p>
-                        <ul class="mt-4 space-y-2 text-sm text-slate-600">
-                            <li>Pesquisa ofertas e compara Preços</li>
-                            <li>Login antes de finalizar compra</li>
-                            <li>Carrinho simples e rápido</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
         </main>
 
         <footer class="border-t border-slate-200 bg-[#eef8df] px-6 py-12">

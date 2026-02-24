@@ -72,7 +72,6 @@
                 <nav class="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex md:justify-self-center">
                     <a class="hover:text-slate-900" href="/#ofertas">Ofertas</a>
                     <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farm&aacute;cias</a>
-                    <a class="hover:text-slate-900" href="/#como">Como funciona</a>
                     <a class="hover:text-slate-900" href="/produtos">Cat&aacute;logo</a>
                 </nav>
                 <form class="w-full md:w-[440px] md:col-start-3 md:justify-self-end" action="{{ route('storefront.index') }}" method="GET">
@@ -149,7 +148,6 @@
                 <div class="grid gap-3">
                     <a class="hover:text-slate-900" href="/#ofertas">Ofertas</a>
                     <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farm&aacute;cias</a>
-                    <a class="hover:text-slate-900" href="/#como">Como funciona</a>
                     <a class="hover:text-slate-900" href="/produtos">Cat&aacute;logo</a>
                     <a class="flex items-center justify-between rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-lime-300" href="/carrinho">
                         <span class="inline-flex items-center gap-2">
