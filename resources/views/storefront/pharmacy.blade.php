@@ -7,7 +7,7 @@
         <div class="glass rounded-3xl p-6">
             <p class="text-sm uppercase tracking-[0.2em] text-lime-700">Farmácia</p>
             <h1 class="brand-title mt-3 text-4xl text-slate-900">{{ $pharmacy->name }}</h1>
-            <p class="mt-3 text-sm text-slate-600">{{ $pharmacy->address ?? 'Endereco indisponivel.' }}</p>
+            <p class="mt-3 text-sm text-slate-600">{{ $pharmacy->address ?? 'Endereço indisponível.' }}</p>
             <div class="mt-4 flex flex-wrap gap-3 text-sm text-slate-600">
                 <span class="rounded-full border border-slate-300 px-3 py-1">{{ $pharmacy->email }}</span>
                 <span class="rounded-full border border-slate-300 px-3 py-1">{{ $pharmacy->phone }}</span>
@@ -27,7 +27,7 @@
     <section class="mt-10">
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
-                <p class="text-sm uppercase tracking-[0.2em] text-lime-700">Catalogo</p>
+                <p class="text-sm uppercase tracking-[0.2em] text-lime-700">Catálogo</p>
                 <h2 class="brand-title text-4xl text-slate-900">Produtos da Farmácia</h2>
             </div>
             <a class="text-sm text-slate-500 hover:text-slate-900" href="/produtos">Ver todos produtos</a>

@@ -37,7 +37,7 @@
         </div>
 
         <div class="mt-6 flex flex-wrap gap-3">
-            <a class="rounded-full bg-lime-400 px-5 py-2 text-sm font-semibold text-slate-900 hover:bg-lime-300" href="/produtos">Voltar ao catalogo</a>
+            <a class="rounded-full bg-lime-400 px-5 py-2 text-sm font-semibold text-slate-900 hover:bg-lime-300" href="/produtos">Voltar ao catálogo</a>
             <a class="rounded-full border border-slate-300 px-5 py-2 text-sm hover:border-slate-500" href="/carrinho">Novo pedido</a>
         </div>
     </section>

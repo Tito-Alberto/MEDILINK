@@ -36,4 +36,23 @@ class AdminPharmacyController extends Controller
 
         return back()->with('status', 'Farmacia recusada.');
     }
+
+    public function destroy(Pharmacy $pharmacy)
+    {
+        $productCount = $pharmacy->products()->count();
+        $pharmacyName = $pharmacy->name;
+
+        // Preserve order history by keeping products, but detach and hide them.
+        $pharmacy->products()->update([
+            'pharmacy_id' => null,
+            'is_active' => false,
+        ]);
+
+        $pharmacy->delete();
+
+        return back()->with(
+            'status',
+            "Farmacia removida: {$pharmacyName}. {$productCount} produto(s) foram desativado(s)."
+        );
+    }
 }

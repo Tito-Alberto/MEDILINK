@@ -16,7 +16,7 @@
             </div>
             <p class="text-sm uppercase tracking-[0.2em] text-lime-700">Detalhes</p>
             <h1 class="brand-title mt-3 text-4xl text-slate-900">{{ $product->name }}</h1>
-            <p class="mt-4 text-slate-600">{{ $product->description ?? 'Sem descricao detalhada.' }}</p>
+            <p class="mt-4 text-slate-600">{{ $product->description ?? 'Sem descrição detalhada.' }}</p>
             <div class="mt-4 text-sm text-slate-500">
                 {{ $product->pharmacy?->name ?? 'Farmácia independente' }}
             </div>
@@ -39,7 +39,7 @@
                 <button class="w-full rounded-2xl bg-lime-400 py-3 font-semibold text-slate-900 hover:bg-lime-300">
                     Adicionar ao carrinho
                 </button>
-                <a class="block text-center text-sm text-slate-600 hover:text-slate-900" href="/produtos">Voltar ao catalogo</a>
+                <a class="block text-center text-sm text-slate-600 hover:text-slate-900" href="/produtos">Voltar ao catálogo</a>
             </form>
         </div>
     </section>

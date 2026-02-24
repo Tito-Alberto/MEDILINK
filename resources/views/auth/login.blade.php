@@ -73,7 +73,7 @@
                     </button>
                 </form>
                 <p class="mt-4 text-sm text-slate-500">
-                    Ainda nao tem conta?
+                    Ainda não tem conta?
                     <a class="text-lime-700 hover:text-lime-700" href="/register">Criar cadastro</a>
                 </p>
             </div>

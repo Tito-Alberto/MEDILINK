@@ -154,6 +154,26 @@ class StorefrontController extends Controller
         ]);
     }
 
+    public function pharmacies(Request $request)
+    {
+        $isAdmin = (bool) ($request->user()?->is_admin);
+
+        $pharmacies = Pharmacy::query()
+            ->withCount(['products' => function ($query) {
+                $query->where('is_active', true);
+            }])
+            ->when(! $isAdmin, function ($query) {
+                $query->where('status', 'approved');
+            })
+            ->orderBy('name')
+            ->get();
+
+        return view('storefront.pharmacies', [
+            'pharmacies' => $pharmacies,
+            'isAdminView' => $isAdmin,
+        ]);
+    }
+
     public function show(Product $product)
     {
         if (! $product->is_active) {

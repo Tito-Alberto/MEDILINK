@@ -27,7 +27,7 @@
                 </span>
             </div>
             <p class="mt-3 text-sm text-slate-500">
-                {{ $product->description ?? 'Descricao nao disponivel' }}
+                {{ $product->description ?? 'Descrição não disponível' }}
             </p>
             <div class="mt-5 flex items-center justify-between">
                 <span class="text-2xl font-semibold text-lime-700">

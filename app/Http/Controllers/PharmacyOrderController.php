@@ -118,6 +118,6 @@ class PharmacyOrderController extends Controller
             ->whereIn('product_id', $productIds)
             ->update(['seen_at' => null]);
 
-        return back()->with('status', 'Pedido marcado como nao visto.');
+        return back()->with('status', 'Pedido marcado como não visto.');
     }
 }

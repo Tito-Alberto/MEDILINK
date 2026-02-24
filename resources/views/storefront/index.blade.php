@@ -1,17 +1,17 @@
 @extends('layouts.storefront')
 
-@section('title', 'Catalogo - Medlink')
+@section('title', 'Catálogo - Medlink')
 
 @section('content')
     <section class="grid gap-6 md:grid-cols-[1.1fr_0.9fr]">
         <div class="glass rounded-3xl p-6">
-            <p class="text-sm uppercase tracking-[0.2em] text-lime-700">Catalogo</p>
+            <p class="text-sm uppercase tracking-[0.2em] text-lime-700">Catálogo</p>
             <h1 class="brand-title mt-3 text-4xl text-slate-900">Produtos essenciais para sua Farmácia.</h1>
             <p class="mt-4 text-slate-600">
                 Compare Preços, adicione ao carrinho e finalize seu pedido com entrega rapida.
             </p>
             <div class="mt-6 flex flex-wrap gap-3 text-sm text-slate-600">
-                <span class="rounded-full border border-slate-300 px-3 py-1">Frete rapido</span>
+                <span class="rounded-full border border-slate-300 px-3 py-1">Frete rápido</span>
                 <span class="rounded-full border border-slate-300 px-3 py-1">Ofertas do dia</span>
                 <span class="rounded-full border border-slate-300 px-3 py-1">Compra segura</span>
             </div>
@@ -34,7 +34,7 @@
                 <p class="text-sm text-slate-500">{{ $allProductCount }} produtos e {{ $allPharmacyCount }} Farmácias.</p>
             </div>
             <div class="flex flex-wrap gap-2 text-xs text-slate-600">
-                <span class="rounded-full border border-slate-300 px-3 py-1">Catalogo atualizado</span>
+                <span class="rounded-full border border-slate-300 px-3 py-1">Catálogo atualizado</span>
                 <span class="rounded-full border border-slate-300 px-3 py-1">Farmácias aprovadas</span>
             </div>
         </div>
@@ -65,7 +65,7 @@
                         @foreach ($pharmacies as $pharmacy)
                             <div class="rounded-2xl border border-slate-200 bg-white/80 p-5">
                                 <p class="text-lg font-semibold text-slate-900">{{ $pharmacy->name }}</p>
-                                <p class="mt-1 text-sm text-slate-500">{{ $pharmacy->address ?? 'Endereco indisponivel' }}</p>
+                                <p class="mt-1 text-sm text-slate-500">{{ $pharmacy->address ?? 'Endereço indisponível' }}</p>
                                 <p class="mt-2 text-xs text-lime-700">Farmácia aprovada</p>
                                 <a class="mt-3 inline-flex text-xs text-lime-700 hover:text-lime-700" href="{{ route('storefront.pharmacy', $pharmacy) }}">
                                     Ver Farmácia

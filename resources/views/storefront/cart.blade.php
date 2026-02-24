@@ -22,7 +22,7 @@
             <div class="mt-6 text-center text-slate-600">
                 <p>Seu carrinho esta vazio.</p>
                 <a class="mt-4 inline-flex rounded-full bg-lime-400 px-5 py-2 text-sm font-semibold text-slate-900 hover:bg-lime-300" href="/produtos">
-                    Ver catalogo
+                    Ver catálogo
                 </a>
             </div>
         @else

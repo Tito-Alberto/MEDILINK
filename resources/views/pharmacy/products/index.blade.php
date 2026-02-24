@@ -30,7 +30,7 @@
                         <div>
                             <p class="text-xs uppercase tracking-[0.2em] text-slate-500">{{ $product->category ?? 'Sem categoria' }}</p>
                             <h2 class="mt-2 text-xl font-semibold text-slate-900">{{ $product->name }}</h2>
-                            <p class="mt-2 text-sm text-slate-600">{{ $product->description ?? 'Sem descricao.' }}</p>
+                            <p class="mt-2 text-sm text-slate-600">{{ $product->description ?? 'Sem descrição.' }}</p>
                         </div>
                         <span class="rounded-full border border-slate-300 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-600">
                             {{ $product->is_active ? 'Ativo' : 'Inativo' }}

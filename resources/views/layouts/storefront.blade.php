@@ -58,7 +58,7 @@
                         </div>
                         <div>
                             <p class="brand-title text-3xl text-slate-900">Medlink</p>
-                            <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Farmácia + Ecommerce</p>
+                            <p class="text-xs uppercase tracking-[0.32em] text-slate-500">Farm&aacute;cia + E-commerce</p>
                         </div>
                     </a>
                     <button id="mobileMenuToggleStore" class="md:hidden rounded-full border border-slate-300 p-2 text-slate-600 hover:border-lime-400 hover:text-lime-700" type="button" aria-expanded="false" aria-controls="mobileMenuStore" aria-label="Abrir menu">
@@ -71,9 +71,9 @@
                 </div>
                 <nav class="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex md:justify-self-center">
                     <a class="hover:text-slate-900" href="/#ofertas">Ofertas</a>
-                    <a class="hover:text-slate-900" href="/#farmacias">Farmácias</a>
+                    <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farm&aacute;cias</a>
                     <a class="hover:text-slate-900" href="/#como">Como funciona</a>
-                    <a class="hover:text-slate-900" href="/produtos">Catalogo</a>
+                    <a class="hover:text-slate-900" href="/produtos">Cat&aacute;logo</a>
                 </nav>
                 <form class="w-full md:w-[440px] md:col-start-3 md:justify-self-end" action="{{ route('storefront.index') }}" method="GET">
                     <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-0 sm:rounded-full sm:border sm:border-slate-300 sm:bg-white/80 sm:focus-within:border-lime-400">
@@ -87,12 +87,12 @@
                                 type="search"
                                 name="q"
                                 value="{{ request('q') }}"
-                                placeholder="Pesquisar Farmácias, medicamentos, equipamentos..."
+                                placeholder="Pesquisar Farm&aacute;cias, medicamentos, equipamentos..."
                             />
                         </div>
                         <div class="flex w-full items-center rounded-full border border-slate-300 bg-white/80 px-3 py-2 text-sm text-slate-700 sm:w-44 sm:rounded-none sm:border-0 sm:border-l sm:border-slate-200 sm:bg-transparent">
                             <select class="w-full bg-transparent text-sm text-slate-700 focus:outline-none" name="category">
-                                <option value="">Todas categorias</option>
+                                <option value="">Todas as categorias</option>
                                 @foreach (($headerCategories ?? collect()) as $category)
                                     <option value="{{ $category }}" {{ request('category') === $category ? 'selected' : '' }}>
                                         {{ $category }}
@@ -123,7 +123,7 @@
                     </a>
                     @auth
                         @if (auth()->user()->pharmacy)
-                            <a class="hover:text-slate-900" href="/farmacia">Minha Farmácia</a>
+                            <a class="hover:text-slate-900" href="/farmacia">Minha Farm&aacute;cia</a>
                             @if (auth()->user()->pharmacy->status === 'approved')
                                 <a class="hover:text-slate-900" href="{{ route('pharmacy.orders.index') }}">Pedidos</a>
                             @endif
@@ -132,7 +132,7 @@
                             <a class="hover:text-slate-900" href="/admin/farmacias">Admin</a>
                         @endif
                         <x-notification-bell :notifications="$headerNotifications" />
-                        <span class="text-slate-500 font-normal">Ola, {{ auth()->user()->name }}</span>
+                        <span class="text-slate-500 font-normal">Ol&aacute;, {{ auth()->user()->name }}</span>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button class="rounded-full border border-lime-300 bg-lime-400 px-4 py-2 font-semibold text-slate-900 hover:bg-lime-300" type="submit">
@@ -148,9 +148,9 @@
             <div id="mobileMenuStore" class="mt-4 hidden rounded-2xl border border-slate-200 bg-[#eef8df] p-4 text-sm font-semibold text-slate-600 md:hidden">
                 <div class="grid gap-3">
                     <a class="hover:text-slate-900" href="/#ofertas">Ofertas</a>
-                    <a class="hover:text-slate-900" href="/#farmacias">Farmácias</a>
+                    <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farm&aacute;cias</a>
                     <a class="hover:text-slate-900" href="/#como">Como funciona</a>
-                    <a class="hover:text-slate-900" href="/produtos">Catalogo</a>
+                    <a class="hover:text-slate-900" href="/produtos">Cat&aacute;logo</a>
                     <a class="flex items-center justify-between rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-lime-300" href="/carrinho">
                         <span class="inline-flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -166,7 +166,7 @@
                     </a>
                     @auth
                         @if (auth()->user()->pharmacy)
-                            <a class="hover:text-slate-900" href="/farmacia">Minha Farmácia</a>
+                            <a class="hover:text-slate-900" href="/farmacia">Minha Farm&aacute;cia</a>
                             @if (auth()->user()->pharmacy->status === 'approved')
                                 <a class="hover:text-slate-900" href="{{ route('pharmacy.orders.index') }}">Pedidos</a>
                             @endif
@@ -176,7 +176,7 @@
                         @endif
                         <div class="flex items-center gap-3">
                             <x-notification-bell :notifications="$headerNotifications" />
-                            <span class="text-slate-500 font-normal">Ola, {{ auth()->user()->name }}</span>
+                            <span class="text-slate-500 font-normal">Ol&aacute;, {{ auth()->user()->name }}</span>
                         </div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -232,9 +232,9 @@
                 <div>
                     <p class="brand-title text-2xl text-slate-900">Medlink</p>
                     <p class="mt-2 text-sm text-slate-600">
-                        Farm&aacute;cia + Ecommerce para conectar clientes e farm&aacute;cias locais.
+                        Farm&aacute;cia + E-commerce para conectar clientes e farm&aacute;cias locais.
                     </p>
-                    <p class="mt-4 text-xs text-slate-400">? 2026 Medlink. Todos os direitos reservados.</p>
+                    <p class="mt-4 text-xs text-slate-400">&copy; 2026 Medlink. Todos os direitos reservados.</p>
                 </div>
                 <div>
                     <p class="text-sm font-semibold text-slate-700">Contato</p>
@@ -251,7 +251,7 @@
                         <li>S&aacute;bado: 08:00 - 13:00</li>
                         <li>Domingo: Fechado</li>
                     </ul>
-                    <p class="mt-3 text-sm text-slate-500">Endere&ccedil;o: Lubango - Instituto Sup&eacute;rior Independente.</p>
+                    <p class="mt-3 text-sm text-slate-500">Endere&ccedil;o: Lubango - Instituto Superior Independente.</p>
                 </div>
             </div>
         </footer>

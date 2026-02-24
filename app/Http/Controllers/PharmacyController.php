@@ -56,6 +56,6 @@ class PharmacyController extends Controller
 
         return redirect()
             ->route('pharmacy.status')
-            ->with('status', 'Pedido enviado. Aguarde aprovacao do admin.');
+            ->with('status', 'Pedido enviado. Aguarde aprovação do admin.');
     }
 }

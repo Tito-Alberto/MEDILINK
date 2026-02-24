@@ -28,6 +28,7 @@ Route::get('/home', function () {
 
 Route::get('/produtos', [StorefrontController::class, 'index'])->name('storefront.index');
 Route::get('/produtos/{product}', [StorefrontController::class, 'show'])->name('storefront.show');
+Route::get('/farmacias', [StorefrontController::class, 'pharmacies'])->name('storefront.pharmacies');
 Route::get('/farmacias/{pharmacy}', [StorefrontController::class, 'pharmacy'])->name('storefront.pharmacy');
 
 Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
@@ -73,4 +74,5 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
     Route::get('/farmacias', [AdminPharmacyController::class, 'index'])->name('admin.pharmacies.index');
     Route::post('/farmacias/{pharmacy}/approve', [AdminPharmacyController::class, 'approve'])->name('admin.pharmacies.approve');
     Route::post('/farmacias/{pharmacy}/reject', [AdminPharmacyController::class, 'reject'])->name('admin.pharmacies.reject');
+    Route::delete('/farmacias/{pharmacy}', [AdminPharmacyController::class, 'destroy'])->name('admin.pharmacies.destroy');
 });

@@ -19,7 +19,7 @@
             @method('PUT')
             @if (! $product->image_url)
                 <div class="md:col-span-2 rounded-2xl border border-amber-400/30 bg-amber-500/10 p-4 text-sm text-amber-700">
-                    Este produto ainda nao tem imagem. Envie um upload para salvar.
+                    Este produto ainda não tem imagem. Envie um upload para salvar.
                 </div>
             @endif
             @if ($product->image_url)
@@ -41,7 +41,7 @@
                 <input class="mt-2 w-full rounded-2xl border border-slate-300 bg-white/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-lime-400 focus:outline-none" type="text" name="name" value="{{ old('name', $product->name) }}" required />
             </div>
             <div class="md:col-span-2">
-                <label class="text-xs uppercase tracking-[0.2em] text-slate-500">Descricao</label>
+                <label class="text-xs uppercase tracking-[0.2em] text-slate-500">Descrição</label>
                 <textarea class="mt-2 w-full rounded-2xl border border-slate-300 bg-white/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-lime-400 focus:outline-none" name="description" rows="3">{{ old('description', $product->description) }}</textarea>
             </div>
             <div>

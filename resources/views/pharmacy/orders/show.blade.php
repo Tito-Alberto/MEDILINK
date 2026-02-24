@@ -32,7 +32,7 @@
                 <form class="mt-4" method="POST" action="{{ route('pharmacy.orders.unseen', $order->id) }}">
                     @csrf
                     <button class="rounded-full border border-amber-400/50 px-4 py-2 text-xs text-amber-700 hover:border-amber-300" type="submit">
-                        Marcar como nao visto
+                        Marcar como não visto
                     </button>
                 </form>
             </div>

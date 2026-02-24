@@ -21,7 +21,7 @@
                 <input class="mt-2 w-full rounded-2xl border border-slate-300 bg-white/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-lime-400 focus:outline-none" type="text" name="name" value="{{ old('name') }}" placeholder="Ex: Paracetamol 500mg" required />
             </div>
             <div class="md:col-span-2">
-                <label class="text-xs uppercase tracking-[0.2em] text-slate-500">Descricao</label>
+                <label class="text-xs uppercase tracking-[0.2em] text-slate-500">Descrição</label>
                 <textarea class="mt-2 w-full rounded-2xl border border-slate-300 bg-white/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-lime-400 focus:outline-none" name="description" rows="3" placeholder="Detalhes do produto">{{ old('description') }}</textarea>
             </div>
             <div>

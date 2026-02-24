@@ -20,7 +20,7 @@
                            type="text" name="customer_phone" id="customer_phone" value="{{ old('customer_phone') }}" placeholder="(00) 00000-0000" required />
                 </div>
                 <div>
-                    <label class="text-sm text-slate-600" for="customer_address">Endereco de entrega</label>
+                    <label class="text-sm text-slate-600" for="customer_address">Endereço de entrega</label>
                     <input class="mt-2 w-full rounded-2xl border border-slate-300 bg-white/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-lime-400 focus:outline-none"
                            type="text" name="customer_address" id="customer_address" value="{{ old('customer_address') }}" placeholder="Rua, numero, bairro" required />
                 </div>

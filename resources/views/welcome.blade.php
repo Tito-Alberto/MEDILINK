@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Medlink - Ecommerce de Farmácias</title>
+    <title>Medlink - E-commerce de Farmácias</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=bebas-neue:400|work-sans:300,400,500,600,700&display=swap" rel="stylesheet" />
@@ -80,9 +80,9 @@
                 </div>
                 <nav class="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex md:justify-self-center">
                     <a class="hover:text-slate-900" href="#ofertas">Ofertas</a>
-                    <a class="hover:text-slate-900" href="#farmacias">Farmácias</a>
+                    <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farmácias</a>
                     <a class="hover:text-slate-900" href="#como">Como funciona</a>
-                    <a class="hover:text-slate-900" href="/produtos">Catalogo</a>
+                    <a class="hover:text-slate-900" href="/produtos">Catálogo</a>
                 </nav>
                 <form class="w-full md:w-[440px] md:justify-self-end" action="/produtos" method="GET">
                     <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-0 sm:rounded-full sm:border sm:border-slate-300 sm:bg-white/80 sm:focus-within:border-lime-400">
@@ -141,8 +141,11 @@
                                 Pedidos
                             </a>
                         @endif
+                        @if (auth()->user()->is_admin)
+                            <x-admin-approval-bell :notifications="$adminHeaderNotifications" />
+                        @endif
                         <x-notification-bell :notifications="$headerNotifications" />
-                        <span class="text-sm text-slate-500">Ola, {{ auth()->user()->name }}</span>
+                        <span class="text-sm text-slate-500">Olá, {{ auth()->user()->name }}</span>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button class="rounded-full border border-lime-300 bg-lime-400 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-lime-300" type="submit">
@@ -171,9 +174,9 @@
                         </span>
                     </a>
                     <a class="hover:text-slate-900" href="#ofertas">Ofertas</a>
-                    <a class="hover:text-slate-900" href="#farmacias">Farmácias</a>
+                    <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farmácias</a>
                     <a class="hover:text-slate-900" href="#como">Como funciona</a>
-                    <a class="hover:text-slate-900" href="/produtos">Catalogo</a>
+                    <a class="hover:text-slate-900" href="/produtos">Catálogo</a>
                     @auth
                         @if (auth()->user()->pharmacy)
                             <a class="hover:text-slate-900" href="/farmacia">Minha Farmácia</a>
@@ -182,8 +185,11 @@
                             <a class="hover:text-slate-900" href="{{ route('pharmacy.orders.index') }}">Pedidos</a>
                         @endif
                         <div class="flex items-center gap-3">
+                            @if (auth()->user()->is_admin)
+                                <x-admin-approval-bell :notifications="$adminHeaderNotifications" />
+                            @endif
                             <x-notification-bell :notifications="$headerNotifications" />
-                            <span class="text-slate-500">Ola, {{ auth()->user()->name }}</span>
+                            <span class="text-slate-500">Olá, {{ auth()->user()->name }}</span>
                         </div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -286,11 +292,11 @@
                         Ecommerce completo para Farmácias locais
                     </p>
                     <h1 class="brand-title text-5xl text-slate-900 md:text-6xl">
-                        O marketplace onde Farmácias vendem mais, e clientes compram rapido.
+                        O marketplace onde Farmácias vendem mais, e clientes compram rápido.
                     </h1>
                     <p class="text-lg text-slate-600">
                         Medlink conecta Farmácias a novos clientes. Cadastre sua Farmácia, publique seus produtos e
-                        venda com carrinho, login e ofertas em destaque. O publico visualiza os produtos e compra
+                        venda com carrinho, login e ofertas em destaque. O público visualiza os produtos e compra
                         somente apos autenticar.
                     </p>
                     <div class="flex flex-wrap gap-4">
@@ -483,8 +489,8 @@
                     @forelse ($featuredPharmacies as $pharmacy)
                         @php
                             $contact = $pharmacy->phone ?: $pharmacy->email;
-                            $contactLabel = $contact ? 'Contato: ' . $contact : 'Contato nao informado';
-                            $address = $pharmacy->address ?: 'Endereco nao informado';
+                            $contactLabel = $contact ? 'Contato: ' . $contact : 'Contato não informado';
+                            $address = $pharmacy->address ?: 'Endereço não informado';
                         @endphp
                         <div class="glass rounded-3xl p-6">
                             <div class="flex items-center justify-between">
@@ -498,12 +504,12 @@
                             </div>
                             <p class="mt-4 text-sm text-slate-600">{{ $contactLabel }}</p>
                             <a class="mt-5 inline-flex rounded-full border border-slate-300 px-4 py-2 text-sm hover:border-lime-300" href="{{ route('storefront.pharmacy', $pharmacy) }}">
-                                Ver catalogo
+                                Ver catálogo
                             </a>
                         </div>
                     @empty
                         <div class="glass rounded-3xl p-6 md:col-span-2">
-                            <p class="text-sm text-slate-600">Ainda nao temos Farmácias aprovadas. Seja a primeira a cadastrar.</p>
+                            <p class="text-sm text-slate-600">Ainda não temos Farmácias aprovadas. Seja a primeira a cadastrar.</p>
                             <a class="mt-5 inline-flex rounded-full bg-lime-400 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-lime-300" href="{{ auth()->check() ? route('pharmacy.create') : route('register') }}">
                                 Cadastrar Farmácia
                             </a>
@@ -516,13 +522,37 @@
                 <div class="flex flex-wrap items-end justify-between gap-4">
                     <div>
                         <p class="text-sm uppercase tracking-[0.2em] text-lime-700">Como funciona</p>
-                        <h2 class="brand-title text-4xl text-slate-900">Fluxo completo para admin, Farmácias e publico</h2>
+                        <h2 class="brand-title text-4xl text-slate-900">Fluxo completo para admin, Farmácias e público</h2>
                     </div>
                 </div>
-                <div class="mt-8 grid gap-6 md:grid-cols-3">
-                    <div class="glass rounded-3xl p-6">
-                        <p class="text-sm text-lime-700">Admin</p>
-                        <p class="mt-3 text-xl font-semibold text-slate-900">Controle total</p>
+                    <div class="mt-8 grid gap-6 md:grid-cols-3">
+                        <div class="glass rounded-3xl p-6">
+                            <div class="flex items-center">
+                                @auth
+                                    @if (auth()->user()->is_admin)
+                                        <x-admin-approval-bell :notifications="$adminHeaderNotifications" />
+                                    @else
+                                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-sky-300 bg-sky-100 text-sky-700">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                                <path d="M3 21h18"></path>
+                                                <path d="M5 21V7l7-4 7 4v14"></path>
+                                                <path d="M9 10h6"></path>
+                                                <path d="M9 14h6"></path>
+                                            </svg>
+                                        </span>
+                                    @endif
+                                @else
+                                    <span class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-sky-300 bg-sky-100 text-sky-700">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                            <path d="M3 21h18"></path>
+                                            <path d="M5 21V7l7-4 7 4v14"></path>
+                                            <path d="M9 10h6"></path>
+                                            <path d="M9 14h6"></path>
+                                        </svg>
+                                    </span>
+                                @endauth
+                            </div>
+                            <p class="mt-3 text-xl font-semibold text-slate-900">Controle total</p>
                         <ul class="mt-4 space-y-2 text-sm text-slate-600">
                             <li>Valida novas Farmácias</li>
                             <li>Destaca ofertas e campanhas</li>
@@ -533,18 +563,18 @@
                         <p class="text-sm text-lime-700">Farmácias</p>
                         <p class="mt-3 text-xl font-semibold text-slate-900">Venda com autonomia</p>
                         <ul class="mt-4 space-y-2 text-sm text-slate-600">
-                            <li>Cadastro rapido de produtos</li>
+                            <li>Cadastro rápido de produtos</li>
                             <li>Precificacao e estoque online</li>
                             <li>Recebe pedidos e confirma entrega</li>
                         </ul>
                     </div>
                     <div class="glass rounded-3xl p-6">
-                        <p class="text-sm text-lime-700">Publico</p>
+                        <p class="text-sm text-lime-700">Público</p>
                         <p class="mt-3 text-xl font-semibold text-slate-900">Compra segura</p>
                         <ul class="mt-4 space-y-2 text-sm text-slate-600">
                             <li>Pesquisa ofertas e compara Preços</li>
                             <li>Login antes de finalizar compra</li>
-                            <li>Carrinho simples e rapido</li>
+                            <li>Carrinho simples e rápido</li>
                         </ul>
                     </div>
                 </div>
@@ -556,7 +586,7 @@
                 <div>
                     <p class="brand-title text-2xl text-slate-900">Medlink</p>
                     <p class="mt-2 text-sm text-slate-600">
-                        Farm&aacute;cia + Ecommerce para conectar clientes e farm&aacute;cias locais.
+                        Farm&aacute;cia + E-commerce para conectar clientes e farm&aacute;cias locais.
                     </p>
                     <p class="mt-4 text-xs text-slate-400">2026 Medlink. Todos os direitos reservados.</p>
                 </div>
@@ -575,7 +605,7 @@
                         <li>S&aacute;bado: 08:00 - 13:00</li>
                         <li>Domingo: Fechado</li>
                     </ul>
-                    <p class="mt-3 text-sm text-slate-500">Endere&ccedil;o: Lubango - Instituto Sup&eacute;rior Independente.</p>
+                    <p class="mt-3 text-sm text-slate-500">Endere&ccedil;o: Lubango - Instituto Superior Independente.</p>
                 </div>
             </div>
         </footer>

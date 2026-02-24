@@ -90,12 +90,12 @@
 
             <div class="flex flex-col justify-center gap-6">
                 <div class="glass rounded-3xl p-6">
-                    <p class="text-sm uppercase tracking-[0.2em] text-lime-700">Aprovacao admin</p>
+                    <p class="text-sm uppercase tracking-[0.2em] text-lime-700">Aprovação admin</p>
                     <p class="mt-3 text-2xl font-semibold text-slate-900">Farmácias passam por validacao.</p>
                     <p class="mt-2 text-sm text-slate-600">Cadastre primeiro sua conta, depois envie o pedido da Farmácia.</p>
                 </div>
                 <div class="glass rounded-3xl p-6">
-                    <p class="text-sm uppercase tracking-[0.2em] text-amber-300">Publico</p>
+                    <p class="text-sm uppercase tracking-[0.2em] text-amber-300">Público</p>
                     <p class="mt-3 text-2xl font-semibold text-slate-900">Visitantes veem produtos sem login.</p>
                     <p class="mt-2 text-sm text-slate-600">Para comprar, o cliente precisa autenticar.</p>
                 </div>

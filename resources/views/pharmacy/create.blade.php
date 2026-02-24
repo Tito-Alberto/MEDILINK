@@ -23,7 +23,7 @@
                 <input class="mt-2 w-full rounded-2xl border border-slate-300 bg-white/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-lime-400 focus:outline-none" type="text" name="name" value="{{ old('name') }}" placeholder="Ex: Farmácia Central" required />
             </div>
             <div>
-                <label class="text-xs uppercase tracking-[0.2em] text-slate-500">Responsavel</label>
+                <label class="text-xs uppercase tracking-[0.2em] text-slate-500">Responsável</label>
                 <input class="mt-2 w-full rounded-2xl border border-slate-300 bg-white/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-lime-400 focus:outline-none" type="text" name="responsible_name" value="{{ old('responsible_name') }}" placeholder="Nome completo" required />
             </div>
             <div>
@@ -39,12 +39,12 @@
                 <input class="mt-2 w-full rounded-2xl border border-slate-300 bg-white/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-lime-400 focus:outline-none" type="email" name="email" value="{{ old('email') }}" placeholder="contato@Farmácia.com" required />
             </div>
             <div>
-                <label class="text-xs uppercase tracking-[0.2em] text-slate-500">Endereco (opcional)</label>
+                <label class="text-xs uppercase tracking-[0.2em] text-slate-500">Endereço (opcional)</label>
                 <input class="mt-2 w-full rounded-2xl border border-slate-300 bg-white/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-lime-400 focus:outline-none" type="text" name="address" value="{{ old('address') }}" placeholder="Rua, bairro, cidade" />
             </div>
             <div class="md:col-span-2 flex flex-wrap items-center justify-between gap-4">
                 <p class="text-xs text-slate-500">
-                    Sua solicitacao sera analisada pelo admin. Isso pode levar algumas horas.
+                    Sua solicitação será analisada pelo admin. Isso pode levar algumas horas.
                 </p>
                 <div class="flex flex-wrap items-center gap-3">
                     <a class="rounded-2xl border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:border-lime-300" href="{{ route('pharmacy.status') }}">

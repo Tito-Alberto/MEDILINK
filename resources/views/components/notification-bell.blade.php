@@ -20,7 +20,7 @@
 
             @if ($notifications['pending'])
                 <div class="mt-3 rounded-2xl border border-amber-400/30 bg-amber-500/10 p-3 text-sm text-amber-700">
-                    Sua Farmácia esta pendente de aprovacao.
+                    Sua Farmácia está pendente de aprovação.
                 </div>
             @else
                 <div class="mt-3 space-y-4">

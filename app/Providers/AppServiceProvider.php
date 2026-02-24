@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Pharmacy;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +35,11 @@ class AppServiceProvider extends ServiceProvider
                 'out_of_stock' => collect(),
                 'low_stock' => collect(),
                 'threshold' => 5,
+            ];
+            $adminNotifications = [
+                'enabled' => false,
+                'pending_count' => 0,
+                'pending' => collect(),
             ];
 
             if ($user && $user->pharmacy) {
@@ -85,6 +91,18 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
 
+            if ($user && $user->is_admin) {
+                $pendingQuery = Pharmacy::query()
+                    ->where('status', 'pending');
+
+                $adminNotifications['enabled'] = true;
+                $adminNotifications['pending_count'] = (clone $pendingQuery)->count();
+                $adminNotifications['pending'] = (clone $pendingQuery)
+                    ->orderBy('created_at')
+                    ->limit(5)
+                    ->get(['id', 'name', 'responsible_name', 'created_at']);
+            }
+
             $defaultCategories = config('medlink.categories', []);
             $existingCategories = Product::query()
                 ->where('is_active', true)
@@ -104,6 +122,7 @@ class AppServiceProvider extends ServiceProvider
                 ->values();
 
             $view->with('headerNotifications', $notifications);
+            $view->with('adminHeaderNotifications', $adminNotifications);
             $view->with('headerCategories', $categories);
         });
     }
