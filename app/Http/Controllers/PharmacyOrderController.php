@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
@@ -119,5 +120,53 @@ class PharmacyOrderController extends Controller
             ->update(['seen_at' => null]);
 
         return back()->with('status', 'Pedido marcado como não visto.');
+    }
+
+    public function updateStatus(Request $request, int $orderId)
+    {
+        $pharmacy = $request->user()->pharmacy;
+
+        $data = $request->validate([
+            'status' => ['required', 'string', 'in:confirmado,em_preparacao,entregue,cancelado,rejeitado'],
+        ]);
+
+        $belongsToPharmacy = DB::table('order_items')
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->where('order_items.order_id', $orderId)
+            ->where('products.pharmacy_id', $pharmacy->id)
+            ->exists();
+
+        if (! $belongsToPharmacy) {
+            abort(404);
+        }
+
+        $order = Order::query()->findOrFail($orderId);
+        $oldStatus = mb_strtolower(trim((string) $order->status));
+        $newStatus = mb_strtolower(trim((string) $data['status']));
+
+        if ($oldStatus === $newStatus) {
+            return back()->with('status', 'O pedido já está com esse estado.');
+        }
+
+        try {
+            DB::transaction(function () use ($order, $newStatus) {
+                $order->status = $newStatus;
+                $order->save();
+            });
+        } catch (\RuntimeException $e) {
+            return back()->withErrors([
+                'status' => $e->getMessage(),
+            ]);
+        }
+
+        $labels = [
+            'confirmado' => 'confirmado',
+            'em_preparacao' => 'marcado como em preparação',
+            'entregue' => 'marcado como entregue',
+            'cancelado' => 'cancelado',
+            'rejeitado' => 'rejeitado',
+        ];
+
+        return back()->with('status', 'Pedido ' . ($labels[$newStatus] ?? 'atualizado') . ' com sucesso.');
     }
 }

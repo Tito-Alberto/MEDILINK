@@ -1,7 +1,7 @@
 @props(['notifications'])
 
 @if (($notifications['enabled'] ?? false))
-    <details class="relative">
+    <details class="relative z-[70]">
         <summary class="list-none cursor-pointer [&::-webkit-details-marker]:hidden">
             <span class="relative flex h-9 w-9 items-center justify-center rounded-full border border-sky-300 bg-sky-100 text-sky-700 hover:border-sky-400 hover:bg-sky-50" title="Aprovacoes de farmacias">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -18,7 +18,7 @@
             </span>
         </summary>
 
-        <div class="absolute right-0 z-50 mt-3 w-80 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl">
+        <div class="absolute right-0 z-[80] mt-3 w-80 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl">
             <div class="flex items-center justify-between">
                 <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Admin</p>
                 <span class="text-xs text-slate-500">{{ $notifications['pending_count'] ?? 0 }} pendentes</span>

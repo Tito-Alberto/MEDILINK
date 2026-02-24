@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Medlink Store')</title>
+    <title>{!! html_entity_decode($__env->yieldContent('title', 'Medlink Store'), ENT_QUOTES, 'UTF-8') !!}</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=bebas-neue:400|work-sans:300,400,500,600,700&display=swap" rel="stylesheet" />
@@ -45,9 +45,15 @@
 <body class="antialiased">
     @php
         $cartCount = array_sum(session('cart', []));
+        $walletMenuHref = auth()->check()
+            ? (auth()->user()->is_admin ? route('admin.wallet.index') : route('wallet.index'))
+            : route('login');
+        $walletMenuLabel = auth()->check() && !auth()->user()->is_admin ? 'Minha carteira' : 'Carteira';
+        $showAdminHeaderLinks = auth()->check() && auth()->user()->is_admin;
+        $showCenterWalletLink = ! auth()->check() || auth()->user()->is_admin;
     @endphp
     <div class="min-h-screen">
-        <header class="border-b border-slate-200 bg-[#eef8df] px-5 py-6">
+        <header class="relative z-40 border-b border-slate-200 bg-[#eef8df] px-5 py-6">
             <div class="grid max-w-none grid-cols-1 items-center gap-5 md:grid-cols-[auto_1fr_auto_auto]">
                 <div class="flex w-full items-center justify-between md:w-auto">
                     <a class="flex items-center gap-3" href="/">
@@ -70,9 +76,13 @@
                     </button>
                 </div>
                 <nav class="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex md:justify-self-center">
-                    <a class="hover:text-slate-900" href="/#ofertas">Ofertas</a>
-                    <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farm&aacute;cias</a>
-                    <a class="hover:text-slate-900" href="/produtos">Cat&aacute;logo</a>
+                    @if ($showAdminHeaderLinks)
+                        <a class="hover:text-slate-900" href="{{ route('admin.reports.index') }}">Relat&oacute;rio</a>
+                        <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farm&aacute;cias</a>
+                    @endif
+                    @if ($showCenterWalletLink)
+                        <a class="hover:text-slate-900" href="{{ $walletMenuHref }}">{{ $walletMenuLabel }}</a>
+                    @endif
                 </nav>
                 <form class="w-full md:w-[440px] md:col-start-3 md:justify-self-end" action="{{ route('storefront.index') }}" method="GET">
                     <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-0 sm:rounded-full sm:border sm:border-slate-300 sm:bg-white/80 sm:focus-within:border-lime-400">
@@ -121,6 +131,9 @@
                         @endif
                     </a>
                     @auth
+                        @if (! auth()->user()->is_admin)
+                            <a class="hover:text-slate-900" href="{{ route('wallet.index') }}">Minha carteira</a>
+                        @endif
                         @if (auth()->user()->pharmacy)
                             <a class="hover:text-slate-900" href="/farmacia">Minha Farm&aacute;cia</a>
                             @if (auth()->user()->pharmacy->status === 'approved')
@@ -146,9 +159,13 @@
             </div>
             <div id="mobileMenuStore" class="mt-4 hidden rounded-2xl border border-slate-200 bg-[#eef8df] p-4 text-sm font-semibold text-slate-600 md:hidden">
                 <div class="grid gap-3">
-                    <a class="hover:text-slate-900" href="/#ofertas">Ofertas</a>
-                    <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farm&aacute;cias</a>
-                    <a class="hover:text-slate-900" href="/produtos">Cat&aacute;logo</a>
+                    @if ($showAdminHeaderLinks)
+                        <a class="hover:text-slate-900" href="{{ route('admin.reports.index') }}">Relat&oacute;rio</a>
+                        <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farm&aacute;cias</a>
+                    @endif
+                    @if ($showCenterWalletLink)
+                        <a class="hover:text-slate-900" href="{{ $walletMenuHref }}">{{ $walletMenuLabel }}</a>
+                    @endif
                     <a class="flex items-center justify-between rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-lime-300" href="/carrinho">
                         <span class="inline-flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -163,6 +180,9 @@
                         </span>
                     </a>
                     @auth
+                        @if (! auth()->user()->is_admin)
+                            <a class="hover:text-slate-900" href="{{ route('wallet.index') }}">Minha carteira</a>
+                        @endif
                         @if (auth()->user()->pharmacy)
                             <a class="hover:text-slate-900" href="/farmacia">Minha Farm&aacute;cia</a>
                             @if (auth()->user()->pharmacy->status === 'approved')

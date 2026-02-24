@@ -54,9 +54,15 @@
 <body class="antialiased">
     @php
         $cartCount = array_sum(session('cart', []));
+        $walletMenuHref = auth()->check()
+            ? (auth()->user()->is_admin ? route('admin.wallet.index') : route('wallet.index'))
+            : route('login');
+        $walletMenuLabel = auth()->check() && !auth()->user()->is_admin ? 'Minha carteira' : 'Carteira';
+        $showAdminHeaderLinks = auth()->check() && auth()->user()->is_admin;
+        $showCenterWalletLink = ! auth()->check() || auth()->user()->is_admin;
     @endphp
     <div class="min-h-screen">
-        <header class="sticky top-0 z-20 border-b border-slate-200/80 bg-[#eef8df] px-5 py-5">
+        <header class="sticky top-0 z-40 border-b border-slate-200/80 bg-[#eef8df] px-5 py-5">
             <div class="grid max-w-none grid-cols-1 items-center gap-5 md:grid-cols-[auto_1fr_auto_auto]">
                 <div class="flex w-full items-center justify-between md:w-auto">
                     <a class="flex items-center gap-3" href="/">
@@ -79,9 +85,13 @@
                     </button>
                 </div>
                 <nav class="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex md:justify-self-center">
-                    <a class="hover:text-slate-900" href="#ofertas">Ofertas</a>
-                    <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farmácias</a>
-                    <a class="hover:text-slate-900" href="/produtos">Catálogo</a>
+                    @if ($showAdminHeaderLinks)
+                        <a class="hover:text-slate-900" href="{{ route('admin.reports.index') }}">Relat&oacute;rio</a>
+                        <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farmácias</a>
+                    @endif
+                    @if ($showCenterWalletLink)
+                        <a class="hover:text-slate-900" href="{{ $walletMenuHref }}">{{ $walletMenuLabel }}</a>
+                    @endif
                 </nav>
                 <form class="w-full md:w-[440px] md:justify-self-end" action="/produtos" method="GET">
                     <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-0 sm:rounded-full sm:border sm:border-slate-300 sm:bg-white/80 sm:focus-within:border-lime-400">
@@ -130,6 +140,11 @@
                         @endif
                     </a>
                     @auth
+                        @if (! auth()->user()->is_admin)
+                            <a class="rounded-full border border-slate-300 px-3 py-1 text-xs text-slate-700 hover:border-lime-300" href="{{ route('wallet.index') }}">
+                                Minha carteira
+                            </a>
+                        @endif
                         @if (auth()->user()->pharmacy)
                             <a class="rounded-full border border-slate-300 px-3 py-1 text-xs text-slate-700 hover:border-lime-300" href="/farmacia">
                                 Minha Farmácia
@@ -172,10 +187,17 @@
                             {{ $cartCount ?? 0 }}
                         </span>
                     </a>
-                    <a class="hover:text-slate-900" href="#ofertas">Ofertas</a>
-                    <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farmácias</a>
-                    <a class="hover:text-slate-900" href="/produtos">Catálogo</a>
+                    @if ($showAdminHeaderLinks)
+                        <a class="hover:text-slate-900" href="{{ route('admin.reports.index') }}">Relat&oacute;rio</a>
+                        <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farmácias</a>
+                    @endif
+                    @if ($showCenterWalletLink)
+                        <a class="hover:text-slate-900" href="{{ $walletMenuHref }}">{{ $walletMenuLabel }}</a>
+                    @endif
                     @auth
+                        @if (! auth()->user()->is_admin)
+                            <a class="hover:text-slate-900" href="{{ route('wallet.index') }}">Minha carteira</a>
+                        @endif
                         @if (auth()->user()->pharmacy)
                             <a class="hover:text-slate-900" href="/farmacia">Minha Farmácia</a>
                         @endif
@@ -303,9 +325,6 @@
                         </a>
                         <a class="rounded-full border border-slate-600 px-6 py-3 text-slate-700 hover:border-lime-300 hover:text-slate-900" href="/login">
                             Entrar para comprar
-                        </a>
-                        <a class="rounded-full border border-slate-300 px-6 py-3 text-slate-600 hover:border-slate-500" href="#ofertas">
-                            Ver melhores ofertas
                         </a>
                     </div>
                     <div class="grid gap-4 pt-4 md:grid-cols-3">

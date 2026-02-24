@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\AdminPharmacyController;
+use App\Http\Controllers\AdminReportController;
+use App\Http\Controllers\WalletController;
 use App\Http\Controllers\PharmacyOrderController;
 use App\Http\Controllers\PharmacyProductController;
 use App\Http\Controllers\StorefrontController;
@@ -56,6 +58,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/farmacia', [PharmacyController::class, 'status'])->name('pharmacy.status');
     Route::get('/farmacia/cadastro', [PharmacyController::class, 'create'])->name('pharmacy.create');
     Route::post('/farmacia/cadastro', [PharmacyController::class, 'store'])->name('pharmacy.store');
+    Route::get('/minha-carteira', [WalletController::class, 'userIndex'])->name('wallet.index');
+    Route::post('/minha-carteira/carregamentos', [WalletController::class, 'storeTopUpRequest'])->name('wallet.topups.store');
+    Route::post('/minha-carteira/carregamentos/confirmar-referencia', [WalletController::class, 'confirmTopUpByReference'])->name('wallet.topups.confirm-reference');
+    Route::post('/minha-carteira/levantamentos', [WalletController::class, 'storeWithdrawRequest'])->name('wallet.withdrawals.store');
 });
 
 Route::middleware(['auth', 'pharmacy.approved'])->prefix('farmacia')->group(function () {
@@ -67,10 +73,18 @@ Route::middleware(['auth', 'pharmacy.approved'])->prefix('farmacia')->group(func
     Route::delete('/produtos/{product}', [PharmacyProductController::class, 'destroy'])->name('pharmacy.products.destroy');
     Route::get('/pedidos', [PharmacyOrderController::class, 'index'])->name('pharmacy.orders.index');
     Route::get('/pedidos/{order}', [PharmacyOrderController::class, 'show'])->name('pharmacy.orders.show');
+    Route::post('/pedidos/{order}/estado', [PharmacyOrderController::class, 'updateStatus'])->name('pharmacy.orders.status');
     Route::post('/pedidos/{order}/nao-visto', [PharmacyOrderController::class, 'markUnseen'])->name('pharmacy.orders.unseen');
 });
 
 Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
+    Route::get('/carteira', [WalletController::class, 'adminIndex'])->name('admin.wallet.index');
+    Route::post('/carteira/lancamentos', [WalletController::class, 'adminSystemAdjustment'])->name('admin.wallet.adjustments.store');
+    Route::post('/carteira/carregamentos/gerar', [WalletController::class, 'adminCreateTopUpReference'])->name('admin.wallet.topups.generate');
+    Route::post('/carteira/carregamentos/{topUpRequest}/aprovar', [WalletController::class, 'adminApproveTopUp'])->name('admin.wallet.topups.approve');
+    Route::post('/carteira/carregamentos/{topUpRequest}/rejeitar', [WalletController::class, 'adminRejectTopUp'])->name('admin.wallet.topups.reject');
+    Route::post('/carteira/levantamentos/{withdrawRequest}/estado', [WalletController::class, 'adminUpdateWithdrawStatus'])->name('admin.wallet.withdrawals.status');
+    Route::get('/relatorios', [AdminReportController::class, 'index'])->name('admin.reports.index');
     Route::get('/farmacias', [AdminPharmacyController::class, 'index'])->name('admin.pharmacies.index');
     Route::post('/farmacias/{pharmacy}/approve', [AdminPharmacyController::class, 'approve'])->name('admin.pharmacies.approve');
     Route::post('/farmacias/{pharmacy}/reject', [AdminPharmacyController::class, 'reject'])->name('admin.pharmacies.reject');

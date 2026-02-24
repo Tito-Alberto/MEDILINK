@@ -1,7 +1,7 @@
 @props(['notifications'])
 
 @if ($notifications['enabled'])
-    <details class="relative">
+    <details class="relative z-[70]">
         <summary class="list-none cursor-pointer [&::-webkit-details-marker]:hidden">
             <span class="relative flex h-9 w-9 items-center justify-center rounded-full border border-amber-300 bg-amber-200 text-amber-700 hover:border-amber-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -15,7 +15,7 @@
                 @endif
             </span>
         </summary>
-        <div class="absolute right-0 mt-3 w-80 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl">
+        <div class="absolute right-0 z-[80] mt-3 w-80 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl">
             <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Notificacoes</p>
 
             @if ($notifications['pending'])
