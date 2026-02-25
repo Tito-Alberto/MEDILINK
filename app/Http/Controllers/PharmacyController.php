@@ -47,13 +47,21 @@ class PharmacyController extends Controller
             return redirect()->route('pharmacy.status');
         }
 
+        $request->merge([
+            'name' => trim((string) $request->input('name')),
+            'nif' => trim((string) $request->input('nif')),
+        ]);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:160', Rule::unique('pharmacies', 'name')],
             'responsible_name' => ['required', 'string', 'max:160'],
-            'nif' => ['required', 'string', 'max:40'],
+            'nif' => ['required', 'string', 'max:40', Rule::unique('pharmacies', 'nif')],
             'phone' => ['required', 'string', 'max:40'],
             'email' => ['required', 'string', 'email', 'max:190'],
             'address' => ['nullable', 'string', 'max:255'],
+        ], [
+            'name.unique' => 'Ja existe uma farmacia com este nome.',
+            'nif.unique' => 'Ja existe uma farmacia com este NIF.',
         ]);
 
         Pharmacy::create([
@@ -79,13 +87,21 @@ class PharmacyController extends Controller
             return redirect()->route('pharmacy.create');
         }
 
+        $request->merge([
+            'name' => trim((string) $request->input('name')),
+            'nif' => trim((string) $request->input('nif')),
+        ]);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:160', Rule::unique('pharmacies', 'name')->ignore($pharmacy->id)],
             'responsible_name' => ['required', 'string', 'max:160'],
-            'nif' => ['required', 'string', 'max:40'],
+            'nif' => ['required', 'string', 'max:40', Rule::unique('pharmacies', 'nif')->ignore($pharmacy->id)],
             'phone' => ['required', 'string', 'max:40'],
             'email' => ['required', 'string', 'email', 'max:190'],
             'address' => ['nullable', 'string', 'max:255'],
+        ], [
+            'name.unique' => 'Ja existe uma farmacia com este nome.',
+            'nif.unique' => 'Ja existe uma farmacia com este NIF.',
         ]);
 
         $pharmacy->update([

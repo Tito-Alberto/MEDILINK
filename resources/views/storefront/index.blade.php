@@ -139,8 +139,7 @@
                             Kz {{ number_format($product->price, 2, ',', '.') }}
                         </p>
                         <div class="mt-1 flex items-center justify-between gap-2">
-                            <p class="text-sm text-slate-500">
-                                Farmácia: {{ $product->pharmacy?->name ?? 'Farmácia independente' }}
+                            <p class="rounded-full bg-amber-100 px-2.5 py-1 text-sm text-amber-800">Farmácia: {{ $product->pharmacy?->name ?? 'Farmácia independente' }}
                             </p>
                             @if ($soldCount > 0)
                                 <p class="shrink-0 text-sm font-semibold uppercase tracking-[0.06em] text-lime-600">

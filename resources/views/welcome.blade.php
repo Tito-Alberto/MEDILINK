@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="utf-8">
@@ -559,7 +559,7 @@
                             <p class="text-sm text-slate-500">{{ $name }}</p>
                             <p class="text-2xl font-semibold text-slate-900">Kz {{ number_format($price, 2, ',', '.') }}</p>
                             <div class="mt-1 flex items-center justify-between gap-2">
-                                <p class="text-sm text-slate-500">
+                                <p class="rounded-full bg-amber-100 px-2.5 py-1 text-sm text-amber-800">
                                     Farmácia: {{ data_get($product, 'pharmacy.name') ?? 'Farmácia parceira' }}
                                 </p>
                                 @if ($soldCount > 0)
@@ -606,7 +606,7 @@
                                     <span class="inline-flex h-2.5 w-2.5 rounded-full bg-lime-400"></span>
                                     <h3 class="text-xl font-semibold text-slate-900">{{ $categoryName ?: 'Sem categoria' }}</h3>
                                 </div>
-                                <a class="rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:border-lime-300" href="{{ route('storefront.index', ['category' => $categoryName]) }}">
+                                <a class="rounded-full border border-lime-300 bg-lime-400 px-3 py-1 text-xs font-semibold text-slate-900 hover:bg-lime-300" href="{{ route('storefront.index', ['category' => $categoryName]) }}">
                                     Ver todos
                                 </a>
                             </div>
@@ -632,8 +632,7 @@
                                         <p class="mt-3 line-clamp-2 text-sm font-medium text-slate-900">{{ $name }}</p>
                                         <p class="mt-1 text-lg font-semibold text-slate-900">Kz {{ number_format($price, 2, ',', '.') }}</p>
                                         <div class="mt-1 flex items-center justify-between gap-3">
-                                            <p class="line-clamp-1 text-xs text-slate-500">
-                                                {{ data_get($product, 'pharmacy.name') ?? 'Farm&aacute;cia parceira' }}
+                                            <p class="line-clamp-1 rounded-full bg-amber-100 px-2 py-1 text-xs text-amber-800">{{ data_get($product, 'pharmacy.name') ?? 'Farm&aacute;cia parceira' }}
                                             </p>
                                             @if ($soldCount > 0)
                                                 <p class="shrink-0 text-sm font-semibold text-lime-600">

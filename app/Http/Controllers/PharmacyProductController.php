@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PharmacyProductController extends Controller
 {
@@ -27,14 +28,25 @@ class PharmacyProductController extends Controller
     {
         $pharmacy = $request->user()->pharmacy;
 
+        $request->merge([
+            'name' => trim((string) $request->input('name')),
+        ]);
+
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:160'],
+            'name' => [
+                'required',
+                'string',
+                'max:160',
+                Rule::unique('products', 'name')->where(fn ($query) => $query->where('pharmacy_id', $pharmacy->id)),
+            ],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'category' => ['nullable', 'string', 'max:100'],
             'image_file' => ['required', 'image', 'max:2048'],
             'is_active' => ['nullable', 'boolean'],
+        ], [
+            'name.unique' => 'Ja existe um produto com este nome na sua farmacia.',
         ]);
 
         $imageUrl = $this->storeProductImage($request->file('image_file'));
@@ -68,6 +80,7 @@ class PharmacyProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $this->assertOwnership($request, $product);
+        $pharmacy = $request->user()->pharmacy;
 
         $imageFileRules = ['nullable', 'image', 'max:2048'];
 
@@ -75,14 +88,27 @@ class PharmacyProductController extends Controller
             $imageFileRules[] = 'required';
         }
 
+        $request->merge([
+            'name' => trim((string) $request->input('name')),
+        ]);
+
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:160'],
+            'name' => [
+                'required',
+                'string',
+                'max:160',
+                Rule::unique('products', 'name')
+                    ->where(fn ($query) => $query->where('pharmacy_id', $pharmacy->id))
+                    ->ignore($product->id),
+            ],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'category' => ['nullable', 'string', 'max:100'],
             'image_file' => $imageFileRules,
             'is_active' => ['nullable', 'boolean'],
+        ], [
+            'name.unique' => 'Ja existe um produto com este nome na sua farmacia.',
         ]);
 
         $imageUrl = $product->image_url;
