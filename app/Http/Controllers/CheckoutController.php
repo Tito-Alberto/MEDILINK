@@ -145,6 +145,19 @@ class CheckoutController extends Controller
         ]);
     }
 
+    public function history()
+    {
+        $orders = Order::query()
+            ->where('customer_user_id', auth()->id())
+            ->withCount('items')
+            ->orderByDesc('created_at')
+            ->paginate(12);
+
+        return view('storefront.orders-history', [
+            'orders' => $orders,
+        ]);
+    }
+
     private function buildCartItems(): array
     {
         $cart = session()->get('cart', []);

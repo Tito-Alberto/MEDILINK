@@ -62,6 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/farmacia/editar', [PharmacyController::class, 'edit'])->name('pharmacy.edit');
     Route::put('/farmacia', [PharmacyController::class, 'update'])->name('pharmacy.update');
     Route::post('/notificacoes/pedidos/vistas', [NotificationController::class, 'markOrderNotificationsSeen'])->name('notifications.orders.seen');
+    Route::get('/minhas-compras', [CheckoutController::class, 'history'])->name('orders.history');
     Route::get('/minha-carteira', [WalletController::class, 'userIndex'])->name('wallet.index');
     Route::post('/minha-carteira/carregamentos', [WalletController::class, 'storeTopUpRequest'])->name('wallet.topups.store');
     Route::post('/minha-carteira/carregamentos/confirmar-referencia', [WalletController::class, 'confirmTopUpByReference'])->name('wallet.topups.confirm-reference');

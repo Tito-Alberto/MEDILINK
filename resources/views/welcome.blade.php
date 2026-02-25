@@ -59,6 +59,8 @@
             : route('login');
         $walletMenuLabel = auth()->check() && !auth()->user()->is_admin ? 'Minha carteira' : 'Carteira';
         $showAdminHeaderLinks = auth()->check() && auth()->user()->is_admin;
+        $showCustomerOrderHistoryMenu = auth()->check() && !auth()->user()->is_admin;
+        $customerOrderHistoryMenuLabel = 'Minhas compras';
         $pageLabel = 'Página inicial';
     @endphp
     <div class="min-h-screen">
@@ -139,6 +141,11 @@
                     <a class="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ $walletMenuHref }}">
                         {{ $walletMenuLabel }}
                     </a>
+                    @if ($showCustomerOrderHistoryMenu)
+                        <a class="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('orders.history') }}">
+                            {{ $customerOrderHistoryMenuLabel }}
+                        </a>
+                    @endif
                     @auth
                         @if (auth()->user()->pharmacy)
                             <a class="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="/farmacia">
@@ -188,6 +195,9 @@
                         <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farmácias</a>
                     @endif
                     <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ $walletMenuHref }}">{{ $walletMenuLabel }}</a>
+                    @if ($showCustomerOrderHistoryMenu)
+                        <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('orders.history') }}">{{ $customerOrderHistoryMenuLabel }}</a>
+                    @endif
                     @auth
                         @if (auth()->user()->pharmacy)
                             <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="/farmacia">Minha Farmácia</a>
