@@ -58,14 +58,18 @@
 
     <section class="mt-8 glass rounded-3xl p-4 sm:p-5" data-user-wallet-tabs>
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <p class="text-sm text-slate-600">Escolha a tarefa: carregar saldo, consultar hist&oacute;rico ou gerir a carteira da farm&aacute;cia.</p>
+            <div class="sm:max-w-[34rem]">
+                <p class="text-sm leading-relaxed text-slate-600">
+                    <span class="block">Escolha a tarefa: carregar saldo, pedir levantamento,</span>
+                    <span class="block">consultar hist&oacute;rico ou gerir a carteira da farm&aacute;cia.</span>
+                </p>
             </div>
-            <div class="flex flex-wrap gap-2" role="tablist" aria-label="Sec&ccedil;&otilde;es da minha carteira">
-                <button type="button" role="tab" class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" data-user-wallet-tab="topup">Carregar saldo</button>
-                <button type="button" role="tab" class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" data-user-wallet-tab="history">Hist&oacute;rico</button>
+            <div class="flex flex-nowrap gap-2 overflow-x-auto sm:shrink-0" role="tablist" aria-label="Sec&ccedil;&otilde;es da minha carteira">
+                <button type="button" role="tab" class="shrink-0 whitespace-nowrap rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" data-user-wallet-tab="topup">Carregar saldo</button>
+                <button type="button" role="tab" class="shrink-0 whitespace-nowrap rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" data-user-wallet-tab="history">Hist&oacute;rico</button>
                 @if ($hasPharmacy)
-                    <button type="button" role="tab" class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" data-user-wallet-tab="pharmacy">Farm&aacute;cia</button>
+                    <button type="button" role="tab" class="shrink-0 whitespace-nowrap rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" data-user-wallet-tab="withdrawal">Levantamento</button>
+                    <button type="button" role="tab" class="shrink-0 whitespace-nowrap rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700" data-user-wallet-tab="pharmacy">Farm&aacute;cia</button>
                 @endif
             </div>
         </div>
@@ -274,7 +278,7 @@
     </section>
 
     @if ($pharmacy)
-        <section class="mt-8 glass rounded-3xl p-6 hidden" data-user-wallet-panel="pharmacy">
+        <section class="mt-8 glass rounded-3xl p-6 hidden" data-user-wallet-panel="withdrawal">
             <p class="text-sm uppercase tracking-[0.2em] text-lime-700">Transferir fundos</p>
             <h2 class="brand-title text-3xl text-slate-900">Pedido de levantamento / IBAN</h2>
             <p class="mt-2 text-sm text-slate-600">Use esta op&ccedil;&atilde;o para transferir fundos da sua carteira pessoal ou da farm&aacute;cia para a sua conta/IBAN. O admin valida e marca como pago.</p>
