@@ -131,18 +131,6 @@
                     </div>
                 </form>
                 <div class="hidden items-center justify-end gap-3 text-sm font-semibold text-slate-600 md:col-start-4 md:flex md:flex-nowrap md:justify-self-end">
-                    <a class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-amber-200 text-amber-700 hover:border-amber-400 hover:bg-amber-100" href="/carrinho" aria-label="Carrinho">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="9" cy="20" r="1"></circle>
-                            <circle cx="17" cy="20" r="1"></circle>
-                            <path d="M3 4h2l2.2 10.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 8H7.1"></path>
-                        </svg>
-                        @if ($cartCount > 0)
-                            <span class="absolute -right-1 -top-1 rounded-full bg-lime-400 px-1.5 py-0.5 text-[10px] font-semibold text-slate-900">
-                                {{ $cartCount }}
-                            </span>
-                        @endif
-                    </a>
                     <a class="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ $walletMenuHref }}">{{ $walletMenuLabel }}</a>
                     @if ($showCustomerOrderHistoryMenu)
                         <a class="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('orders.history') }}">{{ $customerOrderHistoryMenuLabel }}</a>
@@ -154,6 +142,18 @@
                                 <a class="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('pharmacy.orders.index') }}">Registro</a>
                             @endif
                         @endif
+                        <a class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-amber-200 text-amber-700 hover:border-amber-400 hover:bg-amber-100" href="/carrinho" aria-label="Carrinho">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="9" cy="20" r="1"></circle>
+                                <circle cx="17" cy="20" r="1"></circle>
+                                <path d="M3 4h2l2.2 10.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 8H7.1"></path>
+                            </svg>
+                            @if ($cartCount > 0)
+                                <span class="absolute -right-1 -top-1 rounded-full bg-lime-400 px-1.5 py-0.5 text-[10px] font-semibold text-slate-900">
+                                    {{ $cartCount }}
+                                </span>
+                            @endif
+                        </a>
                         <x-unified-notification-bell
                             :pharmacy-notifications="$headerNotifications"
                             :admin-notifications="$adminHeaderNotifications"
@@ -167,6 +167,18 @@
                             </button>
                         </form>
                     @else
+                        <a class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-amber-200 text-amber-700 hover:border-amber-400 hover:bg-amber-100" href="/carrinho" aria-label="Carrinho">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="9" cy="20" r="1"></circle>
+                                <circle cx="17" cy="20" r="1"></circle>
+                                <path d="M3 4h2l2.2 10.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 8H7.1"></path>
+                            </svg>
+                            @if ($cartCount > 0)
+                                <span class="absolute -right-1 -top-1 rounded-full bg-lime-400 px-1.5 py-0.5 text-[10px] font-semibold text-slate-900">
+                                    {{ $cartCount }}
+                                </span>
+                            @endif
+                        </a>
                         <a class="inline-flex h-10 shrink-0 items-center rounded-full border border-slate-300 px-4 hover:border-lime-400 hover:text-slate-900" href="/login">Entrar</a>
                         <a class="inline-flex h-10 shrink-0 items-center rounded-full bg-lime-400 px-4 font-semibold text-slate-900 hover:bg-lime-300" href="/register">Criar conta</a>
                     @endauth
@@ -178,19 +190,21 @@
                         <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('admin.reports.index') }}">Relat&oacute;rio</a>
                         <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farm&aacute;cias</a>
                     @endif
-                    <a class="flex items-center justify-between rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-lime-300" href="/carrinho">
-                        <span class="inline-flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="9" cy="20" r="1"></circle>
-                                <circle cx="17" cy="20" r="1"></circle>
-                                <path d="M3 4h2l2.2 10.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 8H7.1"></path>
-                            </svg>
-                            Carrinho
-                        </span>
-                        <span class="rounded-full bg-lime-400 px-2 py-0.5 text-[10px] font-semibold text-slate-900">
-                            {{ $cartCount }}
-                        </span>
-                    </a>
+                    @guest
+                        <a class="flex items-center justify-between rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-lime-300" href="/carrinho">
+                            <span class="inline-flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="9" cy="20" r="1"></circle>
+                                    <circle cx="17" cy="20" r="1"></circle>
+                                    <path d="M3 4h2l2.2 10.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 8H7.1"></path>
+                                </svg>
+                                Carrinho
+                            </span>
+                            <span class="rounded-full bg-lime-400 px-2 py-0.5 text-[10px] font-semibold text-slate-900">
+                                {{ $cartCount }}
+                            </span>
+                        </a>
+                    @endguest
                     <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ $walletMenuHref }}">{{ $walletMenuLabel }}</a>
                     @if ($showCustomerOrderHistoryMenu)
                         <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('orders.history') }}">{{ $customerOrderHistoryMenuLabel }}</a>
@@ -202,7 +216,19 @@
                                 <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('pharmacy.orders.index') }}">Registro</a>
                             @endif
                         @endif
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <a class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-amber-200 text-amber-700 hover:border-amber-400 hover:bg-amber-100" href="/carrinho" aria-label="Carrinho">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="9" cy="20" r="1"></circle>
+                                    <circle cx="17" cy="20" r="1"></circle>
+                                    <path d="M3 4h2l2.2 10.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 8H7.1"></path>
+                                </svg>
+                                @if ($cartCount > 0)
+                                    <span class="absolute -right-1 -top-1 rounded-full bg-lime-400 px-1.5 py-0.5 text-[10px] font-semibold text-slate-900">
+                                        {{ $cartCount }}
+                                    </span>
+                                @endif
+                            </a>
                             <x-unified-notification-bell
                                 :pharmacy-notifications="$headerNotifications"
                                 :admin-notifications="$adminHeaderNotifications"

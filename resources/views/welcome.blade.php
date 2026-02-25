@@ -126,18 +126,6 @@
                     </div>
                 </form>
                 <div class="hidden items-center justify-end gap-3 text-sm text-slate-600 md:flex md:flex-nowrap md:justify-self-end">
-                    <a class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-amber-200 text-amber-700 hover:border-amber-400 hover:bg-amber-100" href="/carrinho" aria-label="Carrinho">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="9" cy="20" r="1"></circle>
-                            <circle cx="17" cy="20" r="1"></circle>
-                            <path d="M3 4h2l2.2 10.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 8H7.1"></path>
-                        </svg>
-                        @if (($cartCount ?? 0) > 0)
-                            <span class="absolute -right-1 -top-1 rounded-full bg-lime-400 px-1.5 py-0.5 text-[10px] font-semibold text-slate-900">
-                                {{ $cartCount ?? 0 }}
-                            </span>
-                        @endif
-                    </a>
                     <a class="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ $walletMenuHref }}">
                         {{ $walletMenuLabel }}
                     </a>
@@ -157,6 +145,18 @@
                                 Registro
                             </a>
                         @endif
+                        <a class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-amber-200 text-amber-700 hover:border-amber-400 hover:bg-amber-100" href="/carrinho" aria-label="Carrinho">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="9" cy="20" r="1"></circle>
+                                <circle cx="17" cy="20" r="1"></circle>
+                                <path d="M3 4h2l2.2 10.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 8H7.1"></path>
+                            </svg>
+                            @if (($cartCount ?? 0) > 0)
+                                <span class="absolute -right-1 -top-1 rounded-full bg-lime-400 px-1.5 py-0.5 text-[10px] font-semibold text-slate-900">
+                                    {{ $cartCount ?? 0 }}
+                                </span>
+                            @endif
+                        </a>
                         <x-unified-notification-bell
                             :pharmacy-notifications="$headerNotifications"
                             :admin-notifications="$adminHeaderNotifications"
@@ -170,6 +170,18 @@
                             </button>
                         </form>
                     @else
+                        <a class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-amber-200 text-amber-700 hover:border-amber-400 hover:bg-amber-100" href="/carrinho" aria-label="Carrinho">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="9" cy="20" r="1"></circle>
+                                <circle cx="17" cy="20" r="1"></circle>
+                                <path d="M3 4h2l2.2 10.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 8H7.1"></path>
+                            </svg>
+                            @if (($cartCount ?? 0) > 0)
+                                <span class="absolute -right-1 -top-1 rounded-full bg-lime-400 px-1.5 py-0.5 text-[10px] font-semibold text-slate-900">
+                                    {{ $cartCount ?? 0 }}
+                                </span>
+                            @endif
+                        </a>
                         <a class="inline-flex h-10 shrink-0 items-center rounded-full border border-slate-300 px-4 text-sm hover:border-lime-400 hover:text-slate-900" href="/login">Entrar</a>
                         <a class="inline-flex h-10 shrink-0 items-center rounded-full bg-lime-400 px-4 text-sm font-semibold text-slate-900 hover:bg-lime-300" href="/register">Criar conta</a>
                     @endauth
@@ -177,19 +189,21 @@
             </div>
             <div id="mobileMenu" class="mt-4 hidden rounded-2xl border border-slate-200 bg-[#eef8df] p-4 text-sm font-semibold text-slate-600 md:hidden">
                 <div class="grid gap-3">
-                    <a class="flex items-center justify-between rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-lime-300" href="/carrinho">
-                        <span class="inline-flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="9" cy="20" r="1"></circle>
-                                <circle cx="17" cy="20" r="1"></circle>
-                                <path d="M3 4h2l2.2 10.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 8H7.1"></path>
-                            </svg>
-                            Carrinho
-                        </span>
-                        <span class="rounded-full bg-lime-400 px-2 py-0.5 text-[10px] font-semibold text-slate-900">
-                            {{ $cartCount ?? 0 }}
-                        </span>
-                    </a>
+                    @guest
+                        <a class="flex items-center justify-between rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-lime-300" href="/carrinho">
+                            <span class="inline-flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="9" cy="20" r="1"></circle>
+                                    <circle cx="17" cy="20" r="1"></circle>
+                                    <path d="M3 4h2l2.2 10.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 8H7.1"></path>
+                                </svg>
+                                Carrinho
+                            </span>
+                            <span class="rounded-full bg-lime-400 px-2 py-0.5 text-[10px] font-semibold text-slate-900">
+                                {{ $cartCount ?? 0 }}
+                            </span>
+                        </a>
+                    @endguest
                     @if ($showAdminHeaderLinks)
                         <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('admin.reports.index') }}">Relat&oacute;rio</a>
                         <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farmácias</a>
@@ -205,7 +219,19 @@
                         @if (auth()->user()->pharmacy && auth()->user()->pharmacy->status === 'approved')
                             <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('pharmacy.orders.index') }}">Registro</a>
                         @endif
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <a class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-amber-200 text-amber-700 hover:border-amber-400 hover:bg-amber-100" href="/carrinho" aria-label="Carrinho">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="9" cy="20" r="1"></circle>
+                                    <circle cx="17" cy="20" r="1"></circle>
+                                    <path d="M3 4h2l2.2 10.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L21 8H7.1"></path>
+                                </svg>
+                                @if (($cartCount ?? 0) > 0)
+                                    <span class="absolute -right-1 -top-1 rounded-full bg-lime-400 px-1.5 py-0.5 text-[10px] font-semibold text-slate-900">
+                                        {{ $cartCount ?? 0 }}
+                                    </span>
+                                @endif
+                            </a>
                             <x-unified-notification-bell
                                 :pharmacy-notifications="$headerNotifications"
                                 :admin-notifications="$adminHeaderNotifications"
@@ -355,7 +381,7 @@
                         somente apos autenticar.
                     </p>
                     <div class="flex flex-wrap gap-4">
-                        <a class="rounded-full bg-lime-400 px-6 py-3 font-semibold text-slate-900 hover:bg-lime-300" href="{{ auth()->check() ? route('pharmacy.create') : route('register') }}">
+                        <a class="rounded-full bg-lime-400 px-6 py-3 font-semibold text-slate-900 hover:bg-lime-300" href="{{ auth()->check() ? route('pharmacy.create') : route('login') }}">
                             Cadastrar Farmácia
                         </a>
                         <a class="rounded-full border border-slate-600 px-6 py-3 text-slate-700 hover:border-lime-300 hover:text-slate-900" href="/login">
@@ -372,8 +398,8 @@
                             <p class="text-sm text-slate-500">Produtos ativos</p>
                         </div>
                         <div class="glass rounded-2xl p-4">
-                            <p class="text-2xl font-semibold text-slate-900">{{ $adminCount ?? 0 }}</p>
-                            <p class="text-sm text-slate-500">Admins ativos</p>
+                            <p class="text-2xl font-semibold text-slate-900">{{ $soldProductsCount ?? 0 }}</p>
+                            <p class="text-sm text-slate-500">Produtos vendidos</p>
                         </div>
                     </div>                   <div class="mt-6 glass rounded-2xl p-4">
                         <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Total geral</p>
@@ -451,7 +477,18 @@
                         <p class="text-sm uppercase tracking-[0.2em] text-lime-700">Melhores ofertas</p>
                         <h2 class="brand-title text-4xl text-slate-900">Produtos em destaque</h2>
                     </div>
-                    <div class="text-sm text-slate-500">Compre aqui!.</div>
+                    <div class="flex items-center gap-2 text-sm text-slate-500">
+                        <button
+                            type="button"
+                            class="hidden rounded-full border border-lime-300 bg-lime-400 px-3 py-1 text-xs font-semibold text-slate-900 hover:bg-lime-300"
+                            data-featured-offers-toggle
+                            data-open-label="Ver mais"
+                            data-close-label="Ver menos"
+                            aria-expanded="false"
+                        >
+                            Ver mais
+                        </button>
+                    </div>
                 </div>
                 @php
                     $featuredProducts = $featuredProducts ?? collect();
@@ -494,6 +531,8 @@
                         ],
                     ]);
                     $cards = $featuredProducts->isEmpty() ? $fallbackProducts : $featuredProducts;
+                    $featuredOffersPreviewLimit = 3;
+                    $featuredOffersExtraCount = max(0, $cards->count() - $featuredOffersPreviewLimit);
                 @endphp
                 <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     @foreach ($cards as $product)
@@ -509,7 +548,11 @@
                             $productId = data_get($product, 'id');
                             $detailUrl = $productId ? route('storefront.show', $productId) : url('/produtos');
                         @endphp
-                        <div class="glass fade-in rounded-3xl p-5" style="animation-delay: {{ $loop->index * 0.1 }}s;">
+                        <div
+                            class="glass fade-in rounded-3xl p-5 {{ $loop->index >= $featuredOffersPreviewLimit ? 'hidden' : '' }}"
+                            style="animation-delay: {{ $loop->index * 0.1 }}s;"
+                            @if ($loop->index >= $featuredOffersPreviewLimit) data-featured-offer-extra @endif
+                        >
                             <div class="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white/90 p-2">
                                 <img class="h-36 w-full object-contain" src="{{ $imageUrl }}" alt="Imagem de {{ $name }}" loading="lazy" />
                             </div>
@@ -538,7 +581,7 @@
                         <p class="text-sm uppercase tracking-[0.2em] text-lime-700">Explorar categorias</p>
                         <h2 class="brand-title text-4xl text-slate-900">Produtos por categoria</h2>
                     </div>
-                    <a class="text-sm text-slate-600 hover:text-slate-900" href="{{ route('storefront.index') }}">
+                    <a class="inline-flex items-center rounded-full bg-lime-400 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-lime-300" href="{{ route('storefront.index') }}">
                         Ver cat&aacute;logo completo
                     </a>
                 </div>
@@ -592,9 +635,11 @@
                                             <p class="line-clamp-1 text-xs text-slate-500">
                                                 {{ data_get($product, 'pharmacy.name') ?? 'Farm&aacute;cia parceira' }}
                                             </p>
-                                            <p class="shrink-0 text-sm font-semibold text-lime-600">
-                                                {{ $soldCount }} {{ $soldCount === 1 ? 'Vendido' : 'Vendidos' }}
-                                            </p>
+                                            @if ($soldCount > 0)
+                                                <p class="shrink-0 text-sm font-semibold text-lime-600">
+                                                    {{ $soldCount }} {{ $soldCount === 1 ? 'Vendido' : 'Vendidos' }}
+                                                </p>
+                                            @endif
                                         </div>
                                         <a class="mt-3 inline-flex rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-lime-300" href="{{ $detailUrl }}">
                                             Ver produto
@@ -609,6 +654,38 @@
                         </div>
                     @endforelse
                 </div>
+                @if ($featuredOffersExtraCount > 0)
+                    <script>
+                        (() => {
+                            const section = document.getElementById('ofertas');
+                            const toggle = section?.querySelector('[data-featured-offers-toggle]');
+                            const extraCards = section ? Array.from(section.querySelectorAll('[data-featured-offer-extra]')) : [];
+                            if (!toggle || extraCards.length === 0) return;
+
+                            let expanded = false;
+                            toggle.classList.remove('hidden');
+
+                            const render = () => {
+                                extraCards.forEach((card) => card.classList.toggle('hidden', !expanded));
+                                toggle.textContent = expanded
+                                    ? (toggle.dataset.closeLabel || 'Ver menos')
+                                    : (toggle.dataset.openLabel || 'Ver mais');
+                                toggle.setAttribute('aria-expanded', String(expanded));
+                            };
+
+                            toggle.addEventListener('click', () => {
+                                expanded = !expanded;
+                                render();
+
+                                if (!expanded) {
+                                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }
+                            });
+
+                            render();
+                        })();
+                    </script>
+                @endif
             </section>
 
             <section id="farmacias" class="mx-auto mt-16 max-w-6xl">
@@ -617,7 +694,7 @@
                         <p class="text-sm uppercase tracking-[0.2em] text-amber-300">Farmácias com Preços baixos</p>
                         <h2 class="brand-title text-4xl text-slate-900">Parceiros em destaque</h2>
                     </div>
-                    <a class="text-sm text-amber-700 hover:text-amber-700" href="{{ auth()->check() ? route('pharmacy.create') : route('register') }}">
+                    <a class="text-sm text-amber-700 hover:text-amber-700" href="{{ auth()->check() ? route('pharmacy.create') : route('login') }}">
                         Quero cadastrar minha Farmácia
                     </a>
                 </div>
@@ -649,7 +726,7 @@
                     @empty
                         <div class="glass rounded-3xl p-6 md:col-span-2">
                             <p class="text-sm text-slate-600">Ainda não temos Farmácias aprovadas. Seja a primeira a cadastrar.</p>
-                            <a class="mt-5 inline-flex rounded-full bg-lime-400 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-lime-300" href="{{ auth()->check() ? route('pharmacy.create') : route('register') }}">
+                            <a class="mt-5 inline-flex rounded-full bg-lime-400 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-lime-300" href="{{ auth()->check() ? route('pharmacy.create') : route('login') }}">
                                 Cadastrar Farmácia
                             </a>
                         </div>

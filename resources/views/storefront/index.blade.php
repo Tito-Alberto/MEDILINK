@@ -26,6 +26,7 @@
         </div>
     </section>
 
+    @if (auth()->check() && auth()->user()->is_admin)
     <div class="mt-8 glass rounded-3xl p-5">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
@@ -39,6 +40,8 @@
             </div>
         </div>
     </div>
+
+    @endif
 
     @if (!empty($search))
         <section class="mt-10 space-y-6">

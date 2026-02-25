@@ -34,14 +34,14 @@ Route::get('/produtos/{product}', [StorefrontController::class, 'show'])->name('
 Route::get('/farmacias', [StorefrontController::class, 'pharmacies'])->name('storefront.pharmacies');
 Route::get('/farmacias/{pharmacy}', [StorefrontController::class, 'pharmacy'])->name('storefront.pharmacy');
 
-Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
-Route::post('/carrinho/add/{product}', [CartController::class, 'add'])->name('cart.add');
-Route::patch('/carrinho/{product}', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/carrinho/{product}', [CartController::class, 'remove'])->name('cart.remove');
-Route::delete('/carrinho', [CartController::class, 'clear'])->name('cart.clear');
+Route::get('/carrinho', [CartController::class, 'index'])->middleware('auth')->name('cart.index');
+Route::post('/carrinho/add/{product}', [CartController::class, 'add'])->middleware('auth')->name('cart.add');
+Route::patch('/carrinho/{product}', [CartController::class, 'update'])->middleware('auth')->name('cart.update');
+Route::delete('/carrinho/{product}', [CartController::class, 'remove'])->middleware('auth')->name('cart.remove');
+Route::delete('/carrinho', [CartController::class, 'clear'])->middleware('auth')->name('cart.clear');
 
-Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
-Route::post('/checkout', [CheckoutController::class, 'place'])->name('checkout.place');
+Route::get('/checkout', [CheckoutController::class, 'show'])->middleware('auth')->name('checkout.show');
+Route::post('/checkout', [CheckoutController::class, 'place'])->middleware('auth')->name('checkout.place');
 Route::get('/pedido/{order}', [CheckoutController::class, 'showOrder'])->name('orders.show');
 
 Route::middleware('guest')->group(function () {

@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Pharmacy;
 use App\Models\Product;
-use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StorefrontController extends Controller
 {
@@ -64,9 +64,17 @@ class StorefrontController extends Controller
         $allPharmacyCount = Pharmacy::query()
             ->where('status', 'approved')
             ->count();
-        $adminCount = User::query()
-            ->where('is_admin', true)
-            ->count();
+        $soldProductsCount = (int) (DB::table('order_items')
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->join('products', 'products.id', '=', 'order_items.product_id')
+            ->leftJoin('pharmacies', 'pharmacies.id', '=', 'products.pharmacy_id')
+            ->whereIn('orders.status', ['confirmado', 'em_preparacao', 'entregue'])
+            ->where('products.is_active', true)
+            ->where(function ($query) {
+                $query->whereNull('products.pharmacy_id')
+                    ->orWhere('pharmacies.status', 'approved');
+            })
+            ->sum('order_items.quantity') ?? 0);
 
         return view('welcome', [
             'featuredProducts' => $featuredProducts,
@@ -77,7 +85,7 @@ class StorefrontController extends Controller
             'allProductCount' => $allProductCount,
             'allPharmacyCount' => $allPharmacyCount,
             'allTotalCount' => $allProductCount + $allPharmacyCount,
-            'adminCount' => $adminCount,
+            'soldProductsCount' => $soldProductsCount,
         ]);
     }
 
