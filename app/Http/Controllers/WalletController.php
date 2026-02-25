@@ -13,6 +13,17 @@ use Illuminate\Support\Facades\DB;
 class WalletController extends Controller
 {
     private const DEFAULT_COMMISSION_RATE = 0.10;
+    private const CANCELED_ORDER_STATUSES = [
+        'cancelado',
+        'cancelada',
+        'rejeitado',
+        'rejeitada',
+        'rejected',
+        'recusado',
+        'recusada',
+        'cancelled',
+        'canceled',
+    ];
 
     public function userIndex(Request $request)
     {
@@ -53,25 +64,57 @@ class WalletController extends Controller
         $purchasingBalance = (float) $userWallet->balance;
         $commissionRate = self::DEFAULT_COMMISSION_RATE;
         $pharmacySalesSummary = null;
+        $pharmacySalesProducts = collect();
 
         if ($pharmacy) {
-            $grossSales = (float) (DB::table('order_items')
+            $pharmacySalesBase = DB::table('order_items')
                 ->join('products', 'products.id', '=', 'order_items.product_id')
+                ->join('orders', 'orders.id', '=', 'order_items.order_id')
                 ->where('products.pharmacy_id', $pharmacy->id)
-                ->sum('order_items.line_total') ?? 0);
+                ->whereNotIn('orders.status', self::CANCELED_ORDER_STATUSES);
 
-            $ordersCount = (int) (DB::table('order_items')
-                ->join('products', 'products.id', '=', 'order_items.product_id')
+            $grossSales = (float) ((clone $pharmacySalesBase)->sum('order_items.line_total') ?? 0);
+
+            $ordersCount = (int) ((clone $pharmacySalesBase)
                 ->selectRaw('COUNT(DISTINCT order_items.order_id) as orders_count')
-                ->where('products.pharmacy_id', $pharmacy->id)
                 ->value('orders_count') ?? 0);
+
+            $unitsSold = (int) ((clone $pharmacySalesBase)->sum('order_items.quantity') ?? 0);
+            $productsSoldCount = (int) ((clone $pharmacySalesBase)
+                ->selectRaw('COUNT(DISTINCT order_items.product_id) as products_count')
+                ->value('products_count') ?? 0);
 
             $systemShare = round($grossSales * $commissionRate, 2);
             $pharmacyShare = round($grossSales - $systemShare, 2);
 
+            $pharmacySalesProducts = (clone $pharmacySalesBase)
+                ->select(
+                    'order_items.product_id',
+                    'order_items.product_name'
+                )
+                ->selectRaw('COUNT(DISTINCT order_items.order_id) as orders_count')
+                ->selectRaw('SUM(order_items.quantity) as units_sold')
+                ->selectRaw('SUM(order_items.line_total) as gross_sales')
+                ->groupBy('order_items.product_id', 'order_items.product_name')
+                ->orderByDesc('gross_sales')
+                ->limit(25)
+                ->get()
+                ->map(function ($row) use ($commissionRate) {
+                    $gross = round((float) ($row->gross_sales ?? 0), 2);
+                    $row->gross_sales = $gross;
+                    $row->system_share = round($gross * $commissionRate, 2);
+                    $row->pharmacy_share = round($gross - $row->system_share, 2);
+                    $row->system_percent = (int) round($commissionRate * 100);
+                    $row->pharmacy_percent = 100 - $row->system_percent;
+
+                    return $row;
+                });
+
             $pharmacySalesSummary = [
                 'gross_sales' => $grossSales,
                 'orders_count' => $ordersCount,
+                'units_sold' => $unitsSold,
+                'products_sold_count' => $productsSoldCount,
                 'commission_rate' => $commissionRate,
                 'system_share' => $systemShare,
                 'pharmacy_share' => $pharmacyShare,
@@ -88,6 +131,7 @@ class WalletController extends Controller
             'pendingTopUp' => $pendingTopUp,
             'purchasingBalance' => $purchasingBalance,
             'pharmacySalesSummary' => $pharmacySalesSummary,
+            'pharmacySalesProducts' => $pharmacySalesProducts,
             'commissionRatePercent' => (int) round($commissionRate * 100),
         ]);
     }
@@ -157,6 +201,39 @@ class WalletController extends Controller
         }
 
         return back()->with('status', 'Pagamento confirmado por referência. O valor foi creditado automaticamente na sua carteira.');
+    }
+
+    public function cancelTopUpRequest(Request $request)
+    {
+        $user = $request->user();
+
+        $data = $request->validate([
+            'top_up_request_id' => ['nullable', 'integer'],
+        ]);
+
+        $topUpRequest = WalletTopUpRequest::query()
+            ->where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->when(
+                ! empty($data['top_up_request_id']),
+                fn ($query) => $query->where('id', (int) $data['top_up_request_id']),
+                fn ($query) => $query->latest()
+            )
+            ->first();
+
+        if (! $topUpRequest) {
+            return back()->withErrors([
+                'top_up_request' => 'Nenhum pedido de carregamento pendente foi encontrado para cancelar.',
+            ]);
+        }
+
+        $topUpRequest->update([
+            'status' => 'rejected',
+            'handled_by' => $user->id,
+            'handled_at' => now(),
+        ]);
+
+        return back()->with('status', 'Pedido de carregamento cancelado com sucesso.');
     }
 
     public function paymentReferenceCallback(Request $request)
@@ -300,6 +377,29 @@ class WalletController extends Controller
             ->limit(100)
             ->get();
 
+        $platformEarningsCategories = [
+            'system_fee',
+            'system_sale',
+            'delivery_fee',
+            'reversal_system_fee',
+            'reversal_system_sale',
+            'reversal_delivery_fee',
+        ];
+
+        $platformEarningsBase = WalletTransaction::query()
+            ->where('wallet_account_id', $systemWallet->id)
+            ->where('status', 'posted')
+            ->whereIn('category', $platformEarningsCategories);
+
+        $platformEarningsTotal = (float) ((clone $platformEarningsBase)
+            ->selectRaw("COALESCE(SUM(CASE WHEN direction = 'credit' THEN amount ELSE -amount END), 0) as net_earnings")
+            ->value('net_earnings') ?? 0);
+
+        $platformEarningsToday = (float) ((clone $platformEarningsBase)
+            ->whereDate('posted_at', now()->toDateString())
+            ->selectRaw("COALESCE(SUM(CASE WHEN direction = 'credit' THEN amount ELSE -amount END), 0) as net_earnings")
+            ->value('net_earnings') ?? 0);
+
         $walletSummary = [
             'wallets_count' => WalletAccount::count(),
             'users_wallets_count' => WalletAccount::where('owner_type', 'user')->count(),
@@ -307,12 +407,15 @@ class WalletController extends Controller
             'wallets_balance_sum' => (float) (WalletAccount::sum('balance') ?? 0),
             'pending_topups_count' => WalletTopUpRequest::where('status', 'pending')->count(),
             'pending_withdrawals_count' => WalletWithdrawRequest::whereIn('status', ['pending', 'processing'])->count(),
+            'platform_earnings_total' => $platformEarningsTotal,
+            'platform_earnings_today' => $platformEarningsToday,
         ];
 
         $salesAllocationRows = DB::table('order_items')
             ->join('products', 'products.id', '=', 'order_items.product_id')
             ->leftJoin('pharmacies', 'pharmacies.id', '=', 'products.pharmacy_id')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->whereNotIn('orders.status', self::CANCELED_ORDER_STATUSES)
             ->selectRaw("COALESCE(pharmacies.name, 'Sem farmácia') as pharmacy_name")
             ->selectRaw('COUNT(DISTINCT orders.id) as orders_count')
             ->selectRaw('SUM(order_items.line_total) as gross_sales')

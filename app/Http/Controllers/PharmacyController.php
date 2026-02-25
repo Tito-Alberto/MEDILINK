@@ -26,6 +26,19 @@ class PharmacyController extends Controller
         return view('pharmacy.create');
     }
 
+    public function edit(Request $request)
+    {
+        $pharmacy = $request->user()->pharmacy;
+
+        if (! $pharmacy) {
+            return redirect()->route('pharmacy.create');
+        }
+
+        return view('pharmacy.edit', [
+            'pharmacy' => $pharmacy,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $user = $request->user();
@@ -57,5 +70,35 @@ class PharmacyController extends Controller
         return redirect()
             ->route('pharmacy.status')
             ->with('status', 'Pedido enviado. Aguarde aprovação do admin.');
+    }
+    public function update(Request $request)
+    {
+        $pharmacy = $request->user()->pharmacy;
+
+        if (! $pharmacy) {
+            return redirect()->route('pharmacy.create');
+        }
+
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:160', Rule::unique('pharmacies', 'name')->ignore($pharmacy->id)],
+            'responsible_name' => ['required', 'string', 'max:160'],
+            'nif' => ['required', 'string', 'max:40'],
+            'phone' => ['required', 'string', 'max:40'],
+            'email' => ['required', 'string', 'email', 'max:190'],
+            'address' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $pharmacy->update([
+            'name' => $data['name'],
+            'responsible_name' => $data['responsible_name'],
+            'nif' => $data['nif'],
+            'phone' => $data['phone'],
+            'email' => $data['email'],
+            'address' => $data['address'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('pharmacy.status')
+            ->with('status', 'Dados da farmácia atualizados com sucesso.');
     }
 }

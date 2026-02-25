@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class PharmacyOrderController extends Controller
 {
@@ -29,11 +29,14 @@ class PharmacyOrderController extends Controller
                 'orders.customer_phone',
                 'orders.status',
                 'orders.created_at',
+                'orders.invoice_number',
                 DB::raw('SUM(order_items.quantity) as items_count'),
                 DB::raw('SUM(order_items.line_total) as pharmacy_total'),
+                DB::raw('MAX(orders.delivery_fee) as delivery_fee'),
+                DB::raw('MAX(orders.tax_amount) as tax_amount'),
                 DB::raw('SUM(CASE WHEN order_items.seen_at IS NULL THEN 1 ELSE 0 END) as unseen_items')
             )
-            ->groupBy('orders.id', 'orders.customer_name', 'orders.customer_phone', 'orders.status', 'orders.created_at')
+            ->groupBy('orders.id', 'orders.customer_name', 'orders.customer_phone', 'orders.status', 'orders.created_at', 'orders.invoice_number')
             ->orderByDesc('orders.created_at')
             ->get();
 
@@ -56,21 +59,7 @@ class PharmacyOrderController extends Controller
     {
         $pharmacy = $request->user()->pharmacy;
 
-        $items = DB::table('order_items')
-            ->join('products', 'order_items.product_id', '=', 'products.id')
-            ->where('order_items.order_id', $orderId)
-            ->where('products.pharmacy_id', $pharmacy->id)
-            ->select(
-                'order_items.id',
-                'order_items.product_id',
-                'order_items.product_name',
-                'order_items.unit_price',
-                'order_items.quantity',
-                'order_items.line_total',
-                'order_items.seen_at',
-                'products.image_url'
-            )
-            ->get();
+        $items = $this->orderItemsForPharmacy($pharmacy->id, $orderId);
 
         if ($items->isEmpty()) {
             abort(404);
@@ -97,6 +86,57 @@ class PharmacyOrderController extends Controller
         ]);
     }
 
+    public function invoice(Request $request, int $orderId)
+    {
+        $pharmacy = $request->user()->pharmacy;
+        $payload = $this->buildInvoicePayload($pharmacy->id, $orderId);
+
+        return view('pharmacy.orders.invoice', $payload + [
+            'autoPrint' => (bool) $request->boolean('print'),
+        ]);
+    }
+
+    public function confirmAndPrint(Request $request, int $orderId)
+    {
+        $pharmacy = $request->user()->pharmacy;
+
+        if (! $this->orderBelongsToPharmacy($pharmacy->id, $orderId)) {
+            abort(404);
+        }
+
+        $order = Order::query()->findOrFail($orderId);
+        $currentStatus = $this->normalizeStatus((string) $order->status);
+
+        if (in_array($currentStatus, ['cancelado', 'rejeitado'], true)) {
+            return redirect()
+                ->route('pharmacy.orders.show', $orderId)
+                ->withErrors(['status' => 'Nao e possivel confirmar um pedido cancelado ou rejeitado.']);
+        }
+
+        if ($currentStatus === 'novo') {
+            DB::transaction(function () use ($order) {
+                $this->applyOrderStatusChange($order, 'confirmado');
+            });
+        } elseif (in_array($currentStatus, ['confirmado', 'em_preparacao', 'entregue'], true)) {
+            DB::transaction(function () use ($order) {
+                $this->ensureInvoiceMetadata($order);
+                $order->save();
+            });
+        } else {
+            DB::transaction(function () use ($order) {
+                $this->applyOrderStatusChange($order, 'confirmado');
+            });
+        }
+
+        return back()
+            ->with('status', 'Pedido confirmado com sucesso. Factura pronta para impressao.')
+            ->with('invoice_modal_url', route('pharmacy.orders.invoice', [
+                'order' => $orderId,
+                'print' => 1,
+                'embed' => 1,
+            ]));
+    }
+
     public function markUnseen(Request $request, int $orderId)
     {
         $pharmacy = $request->user()->pharmacy;
@@ -119,7 +159,7 @@ class PharmacyOrderController extends Controller
             ->whereIn('product_id', $productIds)
             ->update(['seen_at' => null]);
 
-        return back()->with('status', 'Pedido marcado como não visto.');
+        return back()->with('status', 'Pedido marcado como nao visto.');
     }
 
     public function updateStatus(Request $request, int $orderId)
@@ -130,28 +170,21 @@ class PharmacyOrderController extends Controller
             'status' => ['required', 'string', 'in:confirmado,em_preparacao,entregue,cancelado,rejeitado'],
         ]);
 
-        $belongsToPharmacy = DB::table('order_items')
-            ->join('products', 'order_items.product_id', '=', 'products.id')
-            ->where('order_items.order_id', $orderId)
-            ->where('products.pharmacy_id', $pharmacy->id)
-            ->exists();
-
-        if (! $belongsToPharmacy) {
+        if (! $this->orderBelongsToPharmacy($pharmacy->id, $orderId)) {
             abort(404);
         }
 
         $order = Order::query()->findOrFail($orderId);
-        $oldStatus = mb_strtolower(trim((string) $order->status));
-        $newStatus = mb_strtolower(trim((string) $data['status']));
+        $oldStatus = $this->normalizeStatus((string) $order->status);
+        $newStatus = $this->normalizeStatus((string) $data['status']);
 
         if ($oldStatus === $newStatus) {
-            return back()->with('status', 'O pedido já está com esse estado.');
+            return back()->with('status', 'O pedido ja esta com esse estado.');
         }
 
         try {
             DB::transaction(function () use ($order, $newStatus) {
-                $order->status = $newStatus;
-                $order->save();
+                $this->applyOrderStatusChange($order, $newStatus);
             });
         } catch (\RuntimeException $e) {
             return back()->withErrors([
@@ -161,12 +194,100 @@ class PharmacyOrderController extends Controller
 
         $labels = [
             'confirmado' => 'confirmado',
-            'em_preparacao' => 'marcado como em preparação',
+            'em_preparacao' => 'marcado como em preparacao',
             'entregue' => 'marcado como entregue',
             'cancelado' => 'cancelado',
             'rejeitado' => 'rejeitado',
         ];
 
         return back()->with('status', 'Pedido ' . ($labels[$newStatus] ?? 'atualizado') . ' com sucesso.');
+    }
+
+    private function applyOrderStatusChange(Order $order, string $newStatus): void
+    {
+        $normalized = $this->normalizeStatus($newStatus);
+
+        $order->status = $normalized;
+
+        if ($normalized === 'confirmado') {
+            $this->ensureInvoiceMetadata($order);
+            $this->notifyCustomerOrderConfirmed($order);
+        }
+
+        $order->save();
+    }
+
+    private function ensureInvoiceMetadata(Order $order): void
+    {
+        if (! $order->invoice_number) {
+            $order->invoice_number = 'FAC-' . now()->format('Ymd') . '-' . str_pad((string) $order->id, 6, '0', STR_PAD_LEFT);
+        }
+
+        if (! $order->invoice_date) {
+            $order->invoice_date = now();
+        }
+    }
+
+    private function notifyCustomerOrderConfirmed(Order $order): void
+    {
+        if (! $order->customer_user_id) {
+            return;
+        }
+
+        $order->customer_confirmed_notified_at = now();
+        $order->customer_confirmed_seen_at = null;
+    }
+
+    private function buildInvoicePayload(int $pharmacyId, int $orderId): array
+    {
+        $items = $this->orderItemsForPharmacy($pharmacyId, $orderId);
+
+        if ($items->isEmpty()) {
+            abort(404);
+        }
+
+        $order = Order::query()->findOrFail($orderId);
+        $total = (float) $items->sum('line_total');
+        $pharmacy = auth()->user()?->pharmacy;
+
+        return [
+            'order' => $order,
+            'items' => $items,
+            'total' => $total,
+            'pharmacy' => $pharmacy,
+        ];
+    }
+
+    private function orderItemsForPharmacy(int $pharmacyId, int $orderId)
+    {
+        return DB::table('order_items')
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->where('order_items.order_id', $orderId)
+            ->where('products.pharmacy_id', $pharmacyId)
+            ->select(
+                'order_items.id',
+                'order_items.product_id',
+                'order_items.product_name',
+                'order_items.unit_price',
+                'order_items.quantity',
+                'order_items.line_total',
+                'order_items.seen_at',
+                'products.image_url'
+            )
+            ->get();
+    }
+
+    private function orderBelongsToPharmacy(int $pharmacyId, int $orderId): bool
+    {
+        return DB::table('order_items')
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->where('order_items.order_id', $orderId)
+            ->where('products.pharmacy_id', $pharmacyId)
+            ->exists();
+    }
+
+    private function normalizeStatus(string $status): string
+    {
+        return mb_strtolower(trim($status));
     }
 }

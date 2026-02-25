@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Pharmacy;
+use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -40,6 +42,11 @@ class AppServiceProvider extends ServiceProvider
                 'enabled' => false,
                 'pending_count' => 0,
                 'pending' => collect(),
+            ];
+            $customerOrderNotifications = [
+                'enabled' => false,
+                'total' => 0,
+                'orders' => collect(),
             ];
 
             if ($user && $user->pharmacy) {
@@ -103,6 +110,31 @@ class AppServiceProvider extends ServiceProvider
                     ->get(['id', 'name', 'responsible_name', 'created_at']);
             }
 
+            if (
+                $user
+                && Schema::hasColumn('orders', 'customer_user_id')
+                && Schema::hasColumn('orders', 'customer_confirmed_notified_at')
+                && Schema::hasColumn('orders', 'customer_confirmed_seen_at')
+            ) {
+                $customerQuery = Order::query()
+                    ->where('customer_user_id', $user->id)
+                    ->whereNotNull('customer_confirmed_notified_at')
+                    ->whereNull('customer_confirmed_seen_at');
+
+                $customerOrderNotifications['enabled'] = true;
+                $customerOrderNotifications['total'] = (clone $customerQuery)->count();
+                $customerOrderNotifications['orders'] = (clone $customerQuery)
+                    ->orderByDesc('customer_confirmed_notified_at')
+                    ->limit(5)
+                    ->get([
+                        'id',
+                        'status',
+                        'total',
+                        'created_at',
+                        'customer_confirmed_notified_at',
+                    ]);
+            }
+
             $defaultCategories = config('medlink.categories', []);
             $existingCategories = Product::query()
                 ->where('is_active', true)
@@ -123,6 +155,7 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('headerNotifications', $notifications);
             $view->with('adminHeaderNotifications', $adminNotifications);
+            $view->with('customerOrderNotifications', $customerOrderNotifications);
             $view->with('headerCategories', $categories);
         });
     }

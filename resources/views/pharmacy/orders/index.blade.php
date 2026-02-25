@@ -46,6 +46,8 @@
                             <th class="px-4 py-3 text-left">Cliente</th>
                             <th class="px-4 py-3 text-left">Contato</th>
                             <th class="px-4 py-3 text-left">Itens</th>
+                            <th class="px-4 py-3 text-left">Subtotal</th>
+                            <th class="px-4 py-3 text-left">Taxa</th>
                             <th class="px-4 py-3 text-left">Total</th>
                             <th class="px-4 py-3 text-left">Status</th>
                             <th class="px-4 py-3 text-left">Data</th>
@@ -54,6 +56,13 @@
                     </thead>
                     <tbody class="divide-y divide-slate-800 bg-white/40 text-slate-700">
                         @foreach ($orders as $order)
+                            @php
+                                $orderStatus = mb_strtolower(trim((string) $order->status));
+                                $canConfirmAndPrint = $orderStatus === 'novo';
+                                $canOpenInvoice = in_array($orderStatus, ['confirmado', 'em_preparacao', 'entregue'], true);
+                                $taxa = (float) (($order->delivery_fee ?? 0) > 0 ? $order->delivery_fee : ($order->tax_amount ?? 0));
+                                $totalComTaxa = (float) $order->pharmacy_total + $taxa;
+                            @endphp
                             <tr class="hover:bg-white/80">
                                 <td class="px-4 py-3 font-semibold">
                                     #{{ $order->id }}
@@ -66,7 +75,9 @@
                                 <td class="px-4 py-3">{{ $order->customer_name }}</td>
                                 <td class="px-4 py-3 text-slate-500">{{ $order->customer_phone }}</td>
                                 <td class="px-4 py-3">{{ $order->items_count }}</td>
-                                <td class="px-4 py-3 text-lime-700">Kz {{ number_format($order->pharmacy_total, 2, ',', '.') }}</td>
+                                <td class="px-4 py-3 text-slate-700">Kz {{ number_format((float) $order->pharmacy_total, 2, ',', '.') }}</td>
+                                <td class="px-4 py-3 text-slate-600">Kz {{ number_format($taxa, 2, ',', '.') }}</td>
+                                <td class="px-4 py-3 text-lime-700">Kz {{ number_format($totalComTaxa, 2, ',', '.') }}</td>
                                 <td class="px-4 py-3">
                                     <span class="rounded-full border border-slate-300 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-600">
                                         {{ $order->status }}
@@ -74,9 +85,28 @@
                                 </td>
                                 <td class="px-4 py-3 text-slate-500">{{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y') }}</td>
                                 <td class="px-4 py-3">
-                                    <a class="text-lime-700 hover:text-lime-700" href="{{ route('pharmacy.orders.show', $order->id) }}">
-                                        Ver detalhes
-                                    </a>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <a class="text-lime-700 hover:text-lime-700" href="{{ route('pharmacy.orders.show', $order->id) }}">
+                                            Ver detalhes
+                                        </a>
+
+                                        @if ($canConfirmAndPrint)
+                                            <form method="POST" action="{{ route('pharmacy.orders.confirm', $order->id) }}">
+                                                @csrf
+                                                <button
+                                                    class="rounded-full border border-lime-300 bg-lime-400 px-3 py-1 text-xs font-semibold text-slate-900 hover:bg-lime-300"
+                                                    type="submit"
+                                                    onclick="return confirm('Confirmar este pedido e imprimir a factura do cliente?');"
+                                                >
+                                                    Confirmar
+                                                </button>
+                                            </form>
+                                        @elseif ($canOpenInvoice)
+                                            <a class="text-xs text-slate-600 hover:text-slate-900" href="{{ route('pharmacy.orders.invoice', ['order' => $order->id, 'embed' => 1]) }}" data-open-invoice-modal-url="{{ route('pharmacy.orders.invoice', ['order' => $order->id, 'embed' => 1]) }}">
+                                                Factura
+                                            </a>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -85,6 +115,7 @@
             </div>
         @endif
     </div>
+    <x-pharmacy-invoice-modal />
 @endsection
 
 

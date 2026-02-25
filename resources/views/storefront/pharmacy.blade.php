@@ -46,6 +46,7 @@
                         $imageUrl = str_starts_with($imagePath, 'http') || str_starts_with($imagePath, '/')
                             ? $imagePath
                             : asset($imagePath);
+                        $soldCount = (int) ($product->sold_quantity ?? 0);
                     @endphp
                     <div class="glass fade-in rounded-3xl p-5">
                         <div class="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white/90">
@@ -56,6 +57,11 @@
                         <p class="mt-2 text-2xl font-semibold text-lime-700">
                             Kz {{ number_format($product->price, 2, ',', '.') }}
                         </p>
+                        @if ($soldCount > 0)
+                            <p class="mt-1 text-right text-sm font-semibold uppercase tracking-[0.06em] text-lime-600">
+                                {{ $soldCount }} vendidos
+                            </p>
+                        @endif
                         @if ($product->description)
                             <p class="mt-3 text-sm text-slate-500">{{ $product->description }}</p>
                         @endif

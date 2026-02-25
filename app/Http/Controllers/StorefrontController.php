@@ -13,6 +13,11 @@ class StorefrontController extends Controller
     {
         $baseQuery = Product::query()
             ->with('pharmacy')
+            ->withSum(['orderItems as sold_quantity' => function ($query) {
+                $query->whereHas('order', function ($orderQuery) {
+                    $orderQuery->whereIn('status', ['confirmado', 'em_preparacao', 'entregue']);
+                });
+            }], 'quantity')
             ->where('is_active', true)
             ->where(function ($query) {
                 $query->whereNull('pharmacy_id')
@@ -30,6 +35,20 @@ class StorefrontController extends Controller
             ->orderByDesc('created_at')
             ->take(3)
             ->get();
+
+        $productsByCategory = (clone $baseQuery)
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->orderByDesc('created_at')
+            ->take(36)
+            ->get()
+            ->groupBy(function ($product) {
+                return trim((string) $product->category);
+            })
+            ->map(function ($items) {
+                return $items->take(4)->values();
+            })
+            ->take(6);
 
         $featuredPharmacies = Pharmacy::query()
             ->where('status', 'approved')
@@ -51,6 +70,7 @@ class StorefrontController extends Controller
 
         return view('welcome', [
             'featuredProducts' => $featuredProducts,
+            'productsByCategory' => $productsByCategory,
             'quickProducts' => $quickProducts,
             'quickProduct' => $quickProducts->first(),
             'featuredPharmacies' => $featuredPharmacies,
@@ -69,6 +89,11 @@ class StorefrontController extends Controller
 
         $baseQuery = Product::query()
             ->with('pharmacy')
+            ->withSum(['orderItems as sold_quantity' => function ($query) {
+                $query->whereHas('order', function ($orderQuery) {
+                    $orderQuery->whereIn('status', ['confirmado', 'em_preparacao', 'entregue']);
+                });
+            }], 'quantity')
             ->where('is_active', true)
             ->where(function ($query) {
                 $query->whereNull('pharmacy_id')
@@ -144,6 +169,11 @@ class StorefrontController extends Controller
         }
 
         $products = $pharmacy->products()
+            ->withSum(['orderItems as sold_quantity' => function ($query) {
+                $query->whereHas('order', function ($orderQuery) {
+                    $orderQuery->whereIn('status', ['confirmado', 'em_preparacao', 'entregue']);
+                });
+            }], 'quantity')
             ->where('is_active', true)
             ->latest()
             ->get();

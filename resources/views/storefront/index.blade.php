@@ -123,6 +123,7 @@
                             $imageUrl = str_starts_with($imagePath, 'http') || str_starts_with($imagePath, '/')
                                 ? $imagePath
                                 : asset($imagePath);
+                            $soldCount = (int) ($product->sold_quantity ?? 0);
                         @endphp
                         <div class="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white/90 p-2">
                             <img class="h-40 w-full object-contain" src="{{ $imageUrl }}" alt="Imagem de {{ $product->name }}" loading="lazy" />
@@ -134,9 +135,16 @@
                         <p class="mt-2 text-2xl font-semibold text-lime-700">
                             Kz {{ number_format($product->price, 2, ',', '.') }}
                         </p>
-                        <p class="mt-1 text-sm text-slate-500">
-                            Farmácia: {{ $product->pharmacy?->name ?? 'Farmácia independente' }}
-                        </p>
+                        <div class="mt-1 flex items-center justify-between gap-2">
+                            <p class="text-sm text-slate-500">
+                                Farmácia: {{ $product->pharmacy?->name ?? 'Farmácia independente' }}
+                            </p>
+                            @if ($soldCount > 0)
+                                <p class="shrink-0 text-sm font-semibold uppercase tracking-[0.06em] text-lime-600">
+                                    {{ $soldCount }} vendidos
+                                </p>
+                            @endif
+                        </div>
                         @if ($product->description)
                             <p class="mt-3 text-sm text-slate-500">{{ $product->description }}</p>
                         @endif

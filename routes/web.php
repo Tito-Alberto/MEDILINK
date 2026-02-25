@@ -11,6 +11,7 @@ use App\Http\Controllers\PharmacyProductController;
 use App\Http\Controllers\StorefrontController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,9 +59,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/farmacia', [PharmacyController::class, 'status'])->name('pharmacy.status');
     Route::get('/farmacia/cadastro', [PharmacyController::class, 'create'])->name('pharmacy.create');
     Route::post('/farmacia/cadastro', [PharmacyController::class, 'store'])->name('pharmacy.store');
+    Route::get('/farmacia/editar', [PharmacyController::class, 'edit'])->name('pharmacy.edit');
+    Route::put('/farmacia', [PharmacyController::class, 'update'])->name('pharmacy.update');
+    Route::post('/notificacoes/pedidos/vistas', [NotificationController::class, 'markOrderNotificationsSeen'])->name('notifications.orders.seen');
     Route::get('/minha-carteira', [WalletController::class, 'userIndex'])->name('wallet.index');
     Route::post('/minha-carteira/carregamentos', [WalletController::class, 'storeTopUpRequest'])->name('wallet.topups.store');
     Route::post('/minha-carteira/carregamentos/confirmar-referencia', [WalletController::class, 'confirmTopUpByReference'])->name('wallet.topups.confirm-reference');
+    Route::post('/minha-carteira/carregamentos/cancelar', [WalletController::class, 'cancelTopUpRequest'])->name('wallet.topups.cancel');
     Route::post('/minha-carteira/levantamentos', [WalletController::class, 'storeWithdrawRequest'])->name('wallet.withdrawals.store');
 });
 
@@ -73,6 +78,8 @@ Route::middleware(['auth', 'pharmacy.approved'])->prefix('farmacia')->group(func
     Route::delete('/produtos/{product}', [PharmacyProductController::class, 'destroy'])->name('pharmacy.products.destroy');
     Route::get('/pedidos', [PharmacyOrderController::class, 'index'])->name('pharmacy.orders.index');
     Route::get('/pedidos/{order}', [PharmacyOrderController::class, 'show'])->name('pharmacy.orders.show');
+    Route::post('/pedidos/{order}/confirmar', [PharmacyOrderController::class, 'confirmAndPrint'])->name('pharmacy.orders.confirm');
+    Route::get('/pedidos/{order}/factura', [PharmacyOrderController::class, 'invoice'])->name('pharmacy.orders.invoice');
     Route::post('/pedidos/{order}/estado', [PharmacyOrderController::class, 'updateStatus'])->name('pharmacy.orders.status');
     Route::post('/pedidos/{order}/nao-visto', [PharmacyOrderController::class, 'markUnseen'])->name('pharmacy.orders.unseen');
 });

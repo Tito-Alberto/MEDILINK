@@ -22,17 +22,15 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:6', 'confirmed'],
         ]);
 
-        $user = User::create([
+        User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
 
-        Auth::login($user);
-
         return redirect()
-            ->route('pharmacy.status')
-            ->with('status', 'Conta criada. Se quiser, cadastre sua farmacia para publicar produtos.');
+            ->route('login')
+            ->with('status', 'Conta criada com sucesso. Faca login para acessar.');
     }
 
     public function showLogin()

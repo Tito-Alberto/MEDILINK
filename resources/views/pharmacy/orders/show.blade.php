@@ -56,6 +56,18 @@
                     <p class="mt-2 text-sm text-slate-500">Obs: {{ $order->notes }}</p>
                 @endif
                 <div class="mt-4 flex flex-wrap gap-2">
+                    @if ($orderStatus === 'novo')
+                        <form method="POST" action="{{ route('pharmacy.orders.confirm', $order->id) }}">
+                            @csrf
+                            <button class="rounded-full border border-lime-300 bg-lime-400 px-4 py-2 text-xs font-semibold text-slate-900 hover:bg-lime-300" type="submit" onclick="return confirm('Confirmar este pedido e imprimir a factura do cliente?');">
+                                Confirmar e imprimir factura
+                            </button>
+                        </form>
+                    @elseif (in_array($orderStatus, ['confirmado', 'em_preparacao', 'entregue'], true))
+                        <a class="rounded-full border border-slate-300 px-4 py-2 text-xs text-slate-700 hover:border-lime-300" href="{{ route('pharmacy.orders.invoice', ['order' => $order->id, 'embed' => 1]) }}" data-open-invoice-modal-url="{{ route('pharmacy.orders.invoice', ['order' => $order->id, 'embed' => 1]) }}">
+                            Imprimir factura
+                        </a>
+                    @endif
                     <form method="POST" action="{{ route('pharmacy.orders.unseen', $order->id) }}">
                         @csrf
                         <button class="rounded-full border border-amber-400/50 px-4 py-2 text-xs text-amber-700 hover:border-amber-300" type="submit">
@@ -110,6 +122,7 @@
             </table>
         </div>
     </div>
+    <x-pharmacy-invoice-modal />
 @endsection
 
 

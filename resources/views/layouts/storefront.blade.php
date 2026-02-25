@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt">
 <head>
     <meta charset="utf-8">
@@ -50,11 +50,24 @@
             : route('login');
         $walletMenuLabel = auth()->check() && !auth()->user()->is_admin ? 'Minha carteira' : 'Carteira';
         $showAdminHeaderLinks = auth()->check() && auth()->user()->is_admin;
-        $showCenterWalletLink = ! auth()->check() || auth()->user()->is_admin;
+        $currentRouteName = request()->route()?->getName() ?? '';
+        $rawPageTitle = html_entity_decode(trim((string) $__env->yieldContent('title', '')), ENT_QUOTES, 'UTF-8');
+        $pageTitleFromSection = trim((string) preg_replace('/\s*-\s*Medlink\s*$/iu', '', $rawPageTitle));
+        $pageLabel = match (true) {
+            $currentRouteName === 'wallet.index' => 'Minha carteira',
+            str_starts_with($currentRouteName, 'admin.wallet.') => 'Carteira do sistema',
+            str_starts_with($currentRouteName, 'admin.reports.') => 'Relatórios',
+            $currentRouteName === 'storefront.pharmacies' => 'Farmácias',
+            $currentRouteName === 'pharmacy.orders.index' => 'Pedidos da farmácia',
+            str_starts_with($currentRouteName, 'pharmacy.orders.') => 'Detalhe do pedido',
+            str_starts_with($currentRouteName, 'pharmacy.') => 'Minha farmácia',
+            $currentRouteName === 'storefront.index' => 'Catálogo',
+            default => ($pageTitleFromSection !== '' ? $pageTitleFromSection : 'Página'),
+        };
     @endphp
-    <div class="min-h-screen">
-        <header class="relative z-40 border-b border-slate-200 bg-[#eef8df] px-5 py-6">
-            <div class="grid max-w-none grid-cols-1 items-center gap-5 md:grid-cols-[auto_1fr_auto_auto]">
+    <div class="flex min-h-screen flex-col">
+        <header data-site-header class="fixed inset-x-0 top-0 z-50 border-b border-slate-200/80 bg-[#eef8df]/95 px-4 py-4 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-[#eef8df]/90 sm:px-5">
+            <div class="grid max-w-none grid-cols-1 items-center gap-4 md:grid-cols-[auto_1fr_auto_auto]">
                 <div class="flex w-full items-center justify-between md:w-auto">
                     <a class="flex items-center gap-3" href="/">
                         <div class="h-11 w-11 rounded-2xl bg-gradient-to-br from-lime-400 to-emerald-500 p-[2px]">
@@ -75,32 +88,29 @@
                         </svg>
                     </button>
                 </div>
-                <nav class="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex md:justify-self-center">
+                <nav class="hidden items-center gap-3 text-sm font-semibold text-slate-600 md:flex md:justify-self-center">
                     @if ($showAdminHeaderLinks)
-                        <a class="hover:text-slate-900" href="{{ route('admin.reports.index') }}">Relat&oacute;rio</a>
-                        <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farm&aacute;cias</a>
-                    @endif
-                    @if ($showCenterWalletLink)
-                        <a class="hover:text-slate-900" href="{{ $walletMenuHref }}">{{ $walletMenuLabel }}</a>
+                        <a class="inline-flex h-10 shrink-0 items-center rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('admin.reports.index') }}">Relat&oacute;rio</a>
+                        <a class="inline-flex h-10 shrink-0 items-center rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farm&aacute;cias</a>
                     @endif
                 </nav>
-                <form class="w-full md:w-[440px] md:col-start-3 md:justify-self-end" action="{{ route('storefront.index') }}" method="GET">
-                    <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-0 sm:rounded-full sm:border sm:border-slate-300 sm:bg-white/80 sm:focus-within:border-lime-400">
-                        <div class="flex w-full flex-1 items-center rounded-full border border-slate-300 bg-white/80 px-4 py-2 text-sm text-slate-900 sm:rounded-none sm:border-0 sm:bg-transparent">
+                <form class="w-full md:w-[440px] md:col-start-3 md:self-center md:justify-self-end" action="{{ route('storefront.index') }}" method="GET">
+                    <div class="flex w-full flex-col gap-2 sm:min-h-[40px] sm:flex-row sm:items-center sm:gap-0 sm:rounded-full sm:border sm:border-slate-300 sm:bg-white/80 sm:focus-within:border-lime-400">
+                        <div class="flex w-full flex-1 items-center rounded-full border border-slate-300 bg-white/80 px-4 py-2 text-sm text-slate-900 sm:h-10 sm:rounded-none sm:border-0 sm:bg-transparent sm:py-0">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="11" cy="11" r="7"></circle>
                                 <path d="m20 20-3.5-3.5"></path>
                             </svg>
                             <input
-                                class="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none"
+                                class="h-full w-full bg-transparent text-sm leading-normal text-slate-900 placeholder:text-slate-500 focus:outline-none sm:h-10 sm:leading-10"
                                 type="search"
                                 name="q"
                                 value="{{ request('q') }}"
                                 placeholder="Pesquisar Farm&aacute;cias, medicamentos, equipamentos..."
                             />
                         </div>
-                        <div class="flex w-full items-center rounded-full border border-slate-300 bg-white/80 px-3 py-2 text-sm text-slate-700 sm:w-44 sm:rounded-none sm:border-0 sm:border-l sm:border-slate-200 sm:bg-transparent">
-                            <select class="w-full bg-transparent text-sm text-slate-700 focus:outline-none" name="category">
+                        <div class="flex w-full items-center rounded-full border border-slate-300 bg-white/80 px-3 py-2 text-sm text-slate-700 sm:h-10 sm:w-44 sm:rounded-none sm:border-0 sm:border-l sm:border-slate-200 sm:bg-transparent sm:py-0">
+                            <select class="h-full w-full bg-transparent text-sm leading-normal text-slate-700 focus:outline-none sm:h-10 sm:leading-10" name="category">
                                 <option value="">Todas as categorias</option>
                                 @foreach (($headerCategories ?? collect()) as $category)
                                     <option value="{{ $category }}" {{ request('category') === $category ? 'selected' : '' }}>
@@ -117,8 +127,8 @@
                         </div>
                     </div>
                 </form>
-                <div class="hidden flex-wrap items-center justify-end gap-3 text-sm font-semibold text-slate-600 md:flex md:col-start-4 md:justify-self-end">
-                    <a class="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-300 bg-amber-200 text-amber-700 hover:border-amber-400 hover:bg-amber-100" href="/carrinho" aria-label="Carrinho">
+                <div class="hidden items-center justify-end gap-3 text-sm font-semibold text-slate-600 md:col-start-4 md:flex md:flex-nowrap md:justify-self-end">
+                    <a class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-amber-200 text-amber-700 hover:border-amber-400 hover:bg-amber-100" href="/carrinho" aria-label="Carrinho">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="9" cy="20" r="1"></circle>
                             <circle cx="17" cy="20" r="1"></circle>
@@ -130,41 +140,37 @@
                             </span>
                         @endif
                     </a>
+                    <a class="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ $walletMenuHref }}">{{ $walletMenuLabel }}</a>
                     @auth
-                        @if (! auth()->user()->is_admin)
-                            <a class="hover:text-slate-900" href="{{ route('wallet.index') }}">Minha carteira</a>
-                        @endif
                         @if (auth()->user()->pharmacy)
-                            <a class="hover:text-slate-900" href="/farmacia">Minha Farm&aacute;cia</a>
+                            <a class="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="/farmacia">Minha Farm&aacute;cia</a>
                             @if (auth()->user()->pharmacy->status === 'approved')
-                                <a class="hover:text-slate-900" href="{{ route('pharmacy.orders.index') }}">Pedidos</a>
+                                <a class="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('pharmacy.orders.index') }}">Registro</a>
                             @endif
                         @endif
-                        @if (auth()->user()->is_admin)
-                            <a class="hover:text-slate-900" href="/admin/farmacias">Admin</a>
-                        @endif
-                        <x-notification-bell :notifications="$headerNotifications" />
-                        <span class="text-slate-500 font-normal">Ol&aacute;, {{ auth()->user()->name }}</span>
-                        <form method="POST" action="{{ route('logout') }}">
+                        <x-unified-notification-bell
+                            :pharmacy-notifications="$headerNotifications"
+                            :admin-notifications="$adminHeaderNotifications"
+                            :customer-notifications="$customerOrderNotifications"
+                        />
+                        <span class="inline-flex h-10 shrink-0 items-center whitespace-nowrap text-sm font-normal text-slate-500">Ol&aacute;, {{ auth()->user()->name }}</span>
+                        <form class="shrink-0" method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button class="rounded-full border border-lime-300 bg-lime-400 px-4 py-2 font-semibold text-slate-900 hover:bg-lime-300" type="submit">
+                            <button class="inline-flex h-10 items-center rounded-full border border-lime-300 bg-lime-400 px-4 font-semibold text-slate-900 hover:bg-lime-300" type="submit">
                                 Sair
                             </button>
                         </form>
                     @else
-                        <a class="rounded-full border border-slate-300 px-4 py-2 hover:border-lime-400 hover:text-slate-900" href="/login">Entrar</a>
-                        <a class="rounded-full bg-lime-400 px-4 py-2 font-semibold text-slate-900 hover:bg-lime-300" href="/register">Criar conta</a>
+                        <a class="inline-flex h-10 shrink-0 items-center rounded-full border border-slate-300 px-4 hover:border-lime-400 hover:text-slate-900" href="/login">Entrar</a>
+                        <a class="inline-flex h-10 shrink-0 items-center rounded-full bg-lime-400 px-4 font-semibold text-slate-900 hover:bg-lime-300" href="/register">Criar conta</a>
                     @endauth
                 </div>
             </div>
             <div id="mobileMenuStore" class="mt-4 hidden rounded-2xl border border-slate-200 bg-[#eef8df] p-4 text-sm font-semibold text-slate-600 md:hidden">
                 <div class="grid gap-3">
                     @if ($showAdminHeaderLinks)
-                        <a class="hover:text-slate-900" href="{{ route('admin.reports.index') }}">Relat&oacute;rio</a>
-                        <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farm&aacute;cias</a>
-                    @endif
-                    @if ($showCenterWalletLink)
-                        <a class="hover:text-slate-900" href="{{ $walletMenuHref }}">{{ $walletMenuLabel }}</a>
+                        <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('admin.reports.index') }}">Relat&oacute;rio</a>
+                        <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farm&aacute;cias</a>
                     @endif
                     <a class="flex items-center justify-between rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-lime-300" href="/carrinho">
                         <span class="inline-flex items-center gap-2">
@@ -179,21 +185,20 @@
                             {{ $cartCount }}
                         </span>
                     </a>
+                    <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ $walletMenuHref }}">{{ $walletMenuLabel }}</a>
                     @auth
-                        @if (! auth()->user()->is_admin)
-                            <a class="hover:text-slate-900" href="{{ route('wallet.index') }}">Minha carteira</a>
-                        @endif
                         @if (auth()->user()->pharmacy)
-                            <a class="hover:text-slate-900" href="/farmacia">Minha Farm&aacute;cia</a>
+                            <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="/farmacia">Minha Farm&aacute;cia</a>
                             @if (auth()->user()->pharmacy->status === 'approved')
-                                <a class="hover:text-slate-900" href="{{ route('pharmacy.orders.index') }}">Pedidos</a>
+                                <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('pharmacy.orders.index') }}">Registro</a>
                             @endif
                         @endif
-                        @if (auth()->user()->is_admin)
-                            <a class="hover:text-slate-900" href="/admin/farmacias">Admin</a>
-                        @endif
                         <div class="flex items-center gap-3">
-                            <x-notification-bell :notifications="$headerNotifications" />
+                            <x-unified-notification-bell
+                                :pharmacy-notifications="$headerNotifications"
+                                :admin-notifications="$adminHeaderNotifications"
+                                :customer-notifications="$customerOrderNotifications"
+                            />
                             <span class="text-slate-500 font-normal">Ol&aacute;, {{ auth()->user()->name }}</span>
                         </div>
                         <form method="POST" action="{{ route('logout') }}">
@@ -222,8 +227,43 @@
                 })();
             </script>
         </header>
+        <div data-site-header-spacer aria-hidden="true"></div>
+        <script>
+            (() => {
+                const header = document.querySelector('[data-site-header]');
+                const spacer = document.querySelector('[data-site-header-spacer]');
+                if (!header || !spacer) {
+                    return;
+                }
 
-        <main class="px-6 pb-16">
+                const syncHeaderSpacer = () => {
+                    spacer.style.height = `${Math.ceil(header.getBoundingClientRect().height || header.offsetHeight || 0)}px`;
+                };
+
+                syncHeaderSpacer();
+                window.addEventListener('resize', syncHeaderSpacer);
+
+                if (window.ResizeObserver) {
+                    new ResizeObserver(syncHeaderSpacer).observe(header);
+                }
+            })();
+        </script>
+
+        <section class="px-6 pt-4">
+            <div class="mx-auto max-w-6xl">
+                <div class="glass rounded-2xl px-4 py-3 sm:px-5">
+                    <div class="flex flex-wrap items-center gap-2 text-sm text-slate-600">
+                        <a class="hover:text-slate-900" href="/">Início</a>
+                        @if ($pageLabel !== 'Início')
+                            <span class="text-slate-400">/</span>
+                            <span class="font-semibold text-slate-900">{{ $pageLabel }}</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <main class="flex-1 px-6 pb-16 pt-4">
             <div class="mx-auto max-w-6xl space-y-6">
                 @if (session('status'))
                     <div class="glass rounded-2xl border border-lime-400/30 bg-lime-500/10 p-4 text-sm text-lime-700">

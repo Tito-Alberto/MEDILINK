@@ -13,13 +13,17 @@ use Illuminate\Support\Facades\DB;
 class CheckoutController extends Controller
 {
     private const SYSTEM_COMMISSION_RATE = 0.10;
+    private const DELIVERY_FEE_SMALL = 500.00;
+    private const DELIVERY_FEE_MEDIUM = 500.00;
+    private const DELIVERY_FEE_LARGE = 500.00;
+    private const DELIVERY_FEE_XL = 500.00;
 
     public function show()
     {
         [$items, $subtotal] = $this->buildCartItems();
 
         if (empty($items)) {
-            return redirect()->route('cart.index')->with('status', 'Seu carrinho está vazio.');
+            return redirect()->route('cart.index')->with('status', 'Seu carrinho estÃ¡ vazio.');
         }
 
         $walletPurchaseBalance = null;
@@ -28,11 +32,14 @@ class CheckoutController extends Controller
             $walletPurchaseBalance = (float) $wallet->balance;
         }
 
+        $deliveryFee = $this->calculateDeliveryFee($subtotal);
+        $total = round($subtotal + $deliveryFee, 2);
+
         return view('storefront.checkout', [
             'items' => $items,
             'subtotal' => $subtotal,
-            'deliveryFee' => 0.0,
-            'total' => $subtotal,
+            'deliveryFee' => $deliveryFee,
+            'total' => $total,
             'walletPurchaseBalance' => $walletPurchaseBalance,
             'canUseWalletPayment' => auth()->check() && $walletPurchaseBalance !== null,
         ]);
@@ -44,37 +51,53 @@ class CheckoutController extends Controller
             'customer_name' => ['required', 'string', 'max:255'],
             'customer_phone' => ['required', 'string', 'max:50'],
             'customer_address' => ['required', 'string', 'max:255'],
+            'customer_nif' => ['nullable', 'string', 'max:50'],
             'notes' => ['nullable', 'string', 'max:500'],
             'payment_method' => ['nullable', 'string', 'in:cash,wallet'],
         ]);
 
         [$items, $subtotal] = $this->buildCartItems();
         if (empty($items)) {
-            return redirect()->route('cart.index')->with('status', 'Seu carrinho está vazio.');
+            return redirect()->route('cart.index')->with('status', 'Seu carrinho estÃ¡ vazio.');
         }
+        $deliveryFee = $this->calculateDeliveryFee($subtotal);
+        $total = round($subtotal + $deliveryFee, 2);
 
         $paymentMethod = (string) ($data['payment_method'] ?? 'cash');
         if ($paymentMethod === 'wallet' && ! auth()->check()) {
             return back()->withErrors([
-                'payment_method' => 'Inicie sessão para pagar com a sua carteira.',
+                'payment_method' => 'Inicie sessÃ£o para pagar com a sua carteira.',
             ])->withInput();
         }
 
+
+        if (auth()->check()) {
+            $wallet = $this->ensureWalletAccount('user', auth()->id(), 'Carteira de ' . auth()->user()->name);
+            if ((float) $wallet->balance >= (float) $total) {
+                $paymentMethod = 'wallet';
+            }
+        }
+
         try {
-            $order = DB::transaction(function () use ($data, $items, $subtotal, $paymentMethod) {
+            $order = DB::transaction(function () use ($data, $items, $subtotal, $deliveryFee, $total, $paymentMethod) {
+            $this->reserveOrderItemsStock($items);
+
             $order = Order::create([
+                'customer_user_id' => auth()->id(),
                 'customer_name' => $data['customer_name'],
                 'customer_phone' => $data['customer_phone'],
                 'customer_address' => $data['customer_address'],
+                'customer_nif' => $data['customer_nif'] ?? null,
                 'notes' => $data['notes'] ?? null,
                 'subtotal' => $subtotal,
-                'delivery_fee' => 0,
-                'total' => $subtotal,
+                'delivery_fee' => $deliveryFee,
+                'tax_amount' => 0,
+                'total' => $total,
                 'status' => 'novo',
             ]);
 
             if ($paymentMethod === 'wallet') {
-                $this->debitCustomerWalletForOrder($order, $subtotal);
+                $this->debitCustomerWalletForOrder($order, $total);
             }
 
             foreach ($items as $item) {
@@ -88,9 +111,7 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            if ($paymentMethod === 'wallet') {
-                $this->creditWalletsForOrder($order, $items);
-            }
+            $this->creditWalletsForOrder($order, $items, $deliveryFee);
 
             return $order;
             });
@@ -107,6 +128,16 @@ class CheckoutController extends Controller
 
     public function showOrder(Order $order)
     {
+        if (
+            auth()->check()
+            && (int) $order->customer_user_id === (int) auth()->id()
+            && $order->customer_confirmed_notified_at
+            && ! $order->customer_confirmed_seen_at
+        ) {
+            $order->customer_confirmed_seen_at = now();
+            $order->save();
+        }
+
         $order->load('items');
 
         return view('storefront.success', [
@@ -149,9 +180,54 @@ class CheckoutController extends Controller
         return [$items, round($subtotal, 2)];
     }
 
-    private function creditWalletsForOrder(Order $order, array $items): void
+    private function reserveOrderItemsStock(array $items): void
     {
-        if (empty($items)) {
+        foreach ($items as $item) {
+            $productId = (int) ($item['product']->id ?? 0);
+            $requestedQty = (int) ($item['qty'] ?? 0);
+
+            if ($productId <= 0 || $requestedQty <= 0) {
+                throw new \RuntimeException('Item inválido no carrinho para concluir o pedido.');
+            }
+
+            /** @var \App\Models\Product|null $lockedProduct */
+            $lockedProduct = Product::query()->lockForUpdate()->find($productId);
+
+            if (! $lockedProduct || ! (bool) $lockedProduct->is_active) {
+                throw new \RuntimeException('Um dos produtos do carrinho já não está disponível.');
+            }
+
+            $currentStock = (int) $lockedProduct->stock;
+            if ($currentStock < $requestedQty) {
+                throw new \RuntimeException(
+                    'Stock insuficiente para "' . $lockedProduct->name . '". Disponível: ' . $currentStock . ' unidade(s).'
+                );
+            }
+
+            $lockedProduct->stock = $currentStock - $requestedQty;
+            $lockedProduct->save();
+        }
+    }
+
+    private function calculateDeliveryFee(float $subtotal): float
+    {
+        $subtotal = round(max(0, $subtotal), 2);
+
+        if ($subtotal <= 0) {
+            return 0.0;
+        }
+
+        return match (true) {
+            $subtotal < 5000 => self::DELIVERY_FEE_SMALL,
+            $subtotal < 15000 => self::DELIVERY_FEE_MEDIUM,
+            $subtotal < 30000 => self::DELIVERY_FEE_LARGE,
+            default => self::DELIVERY_FEE_XL,
+        };
+    }
+
+    private function creditWalletsForOrder(Order $order, array $items, float $deliveryFee = 0.0): void
+    {
+        if (empty($items) && round($deliveryFee, 2) <= 0) {
             return;
         }
 
@@ -185,7 +261,7 @@ class CheckoutController extends Controller
             if ($pharmacyId) {
                 $systemShare = round($grossTotal * self::SYSTEM_COMMISSION_RATE, 2);
                 $pharmacyShare = round($grossTotal - $systemShare, 2);
-                $pharmacyLabel = 'Carteira da farmácia ' . ($group['pharmacy_name'] ?: ('#' . $pharmacyId));
+                $pharmacyLabel = 'Carteira da farmÃ¡cia ' . ($group['pharmacy_name'] ?: ('#' . $pharmacyId));
 
                 if ($pharmacyShare > 0) {
                     $pharmacyWallet = $this->ensureWalletAccount('pharmacy', $pharmacyId, $pharmacyLabel);
@@ -193,7 +269,7 @@ class CheckoutController extends Controller
                         $pharmacyWallet,
                         $pharmacyShare,
                         'pharmacy_sale',
-                        'Quota da farmácia no pedido #' . $order->id,
+                        'Quota da farmÃ¡cia no pedido #' . $order->id,
                         'ORD-' . $order->id . '-PHA-' . $pharmacyId,
                         [
                             'order_id' => $order->id,
@@ -209,7 +285,7 @@ class CheckoutController extends Controller
                         $systemWallet,
                         $systemShare,
                         'system_fee',
-                        'Comissão do sistema no pedido #' . $order->id,
+                        'ComissÃ£o do sistema no pedido #' . $order->id,
                         'ORD-' . $order->id . '-SYS-' . $pharmacyId,
                         [
                             'order_id' => $order->id,
@@ -227,11 +303,26 @@ class CheckoutController extends Controller
                 $systemWallet,
                 $grossTotal,
                 'system_sale',
-                'Venda sem farmácia associada no pedido #' . $order->id,
+                'Venda sem farmÃ¡cia associada no pedido #' . $order->id,
                 'ORD-' . $order->id . '-SYS-DIRECT',
                 [
                     'order_id' => $order->id,
                     'gross_total' => $grossTotal,
+                ]
+            );
+        }
+
+        $deliveryFee = round($deliveryFee, 2);
+        if ($deliveryFee > 0) {
+            $this->postWalletCredit(
+                $systemWallet,
+                $deliveryFee,
+                'delivery_fee',
+                'Taxa de entrega do pedido #' . $order->id,
+                'ORD-' . $order->id . '-DELIVERY',
+                [
+                    'order_id' => $order->id,
+                    'delivery_fee' => $deliveryFee,
                 ]
             );
         }
@@ -240,7 +331,7 @@ class CheckoutController extends Controller
     private function debitCustomerWalletForOrder(Order $order, float $total): void
     {
         if (! auth()->check()) {
-            throw new \RuntimeException('Inicie sessão para pagar com carteira.');
+            throw new \RuntimeException('Inicie sessÃ£o para pagar com carteira.');
         }
 
         $user = auth()->user();

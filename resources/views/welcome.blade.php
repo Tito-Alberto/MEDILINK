@@ -59,11 +59,11 @@
             : route('login');
         $walletMenuLabel = auth()->check() && !auth()->user()->is_admin ? 'Minha carteira' : 'Carteira';
         $showAdminHeaderLinks = auth()->check() && auth()->user()->is_admin;
-        $showCenterWalletLink = ! auth()->check() || auth()->user()->is_admin;
+        $pageLabel = 'Página inicial';
     @endphp
     <div class="min-h-screen">
-        <header class="sticky top-0 z-40 border-b border-slate-200/80 bg-[#eef8df] px-5 py-5">
-            <div class="grid max-w-none grid-cols-1 items-center gap-5 md:grid-cols-[auto_1fr_auto_auto]">
+        <header data-site-header class="fixed inset-x-0 top-0 z-50 border-b border-slate-200/80 bg-[#eef8df]/95 px-4 py-4 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-[#eef8df]/90 sm:px-5">
+            <div class="grid max-w-none grid-cols-1 items-center gap-4 md:grid-cols-[auto_1fr_auto_auto]">
                 <div class="flex w-full items-center justify-between md:w-auto">
                     <a class="flex items-center gap-3" href="/">
                         <div class="h-11 w-11 rounded-2xl bg-gradient-to-br from-lime-400 to-emerald-500 p-[2px]">
@@ -84,32 +84,29 @@
                         </svg>
                     </button>
                 </div>
-                <nav class="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex md:justify-self-center">
+                <nav class="hidden items-center gap-3 text-sm font-semibold text-slate-600 md:flex md:justify-self-center">
                     @if ($showAdminHeaderLinks)
-                        <a class="hover:text-slate-900" href="{{ route('admin.reports.index') }}">Relat&oacute;rio</a>
-                        <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farmácias</a>
-                    @endif
-                    @if ($showCenterWalletLink)
-                        <a class="hover:text-slate-900" href="{{ $walletMenuHref }}">{{ $walletMenuLabel }}</a>
+                        <a class="inline-flex h-10 shrink-0 items-center rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('admin.reports.index') }}">Relat&oacute;rio</a>
+                        <a class="inline-flex h-10 shrink-0 items-center rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farmácias</a>
                     @endif
                 </nav>
-                <form class="w-full md:w-[440px] md:justify-self-end" action="/produtos" method="GET">
-                    <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-0 sm:rounded-full sm:border sm:border-slate-300 sm:bg-white/80 sm:focus-within:border-lime-400">
-                        <div class="flex w-full flex-1 items-center rounded-full border border-slate-300 bg-white/80 px-4 py-2 text-sm text-slate-900 sm:rounded-none sm:border-0 sm:bg-transparent">
+                <form class="w-full md:w-[440px] md:self-center md:justify-self-end" action="/produtos" method="GET">
+                    <div class="flex w-full flex-col gap-2 sm:min-h-[40px] sm:flex-row sm:items-center sm:gap-0 sm:rounded-full sm:border sm:border-slate-300 sm:bg-white/80 sm:focus-within:border-lime-400">
+                        <div class="flex w-full flex-1 items-center rounded-full border border-slate-300 bg-white/80 px-4 py-2 text-sm text-slate-900 sm:h-10 sm:rounded-none sm:border-0 sm:bg-transparent sm:py-0">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="11" cy="11" r="7"></circle>
                                 <path d="m20 20-3.5-3.5"></path>
                             </svg>
                             <input
-                                class="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none"
+                                class="h-full w-full bg-transparent text-sm leading-normal text-slate-900 placeholder:text-slate-500 focus:outline-none sm:h-10 sm:leading-10"
                                 type="search"
                                 name="q"
                                 value="{{ request('q') }}"
                                 placeholder="Pesquisar Farmácias, medicamentos, equipamentos..."
                             />
                         </div>
-                        <div class="flex w-full items-center rounded-full border border-slate-300 bg-white/80 px-3 py-2 text-sm text-slate-700 sm:w-44 sm:rounded-none sm:border-0 sm:border-l sm:border-slate-200 sm:bg-transparent">
-                            <select class="w-full bg-transparent text-sm text-slate-700 focus:outline-none" name="category">
+                        <div class="flex w-full items-center rounded-full border border-slate-300 bg-white/80 px-3 py-2 text-sm text-slate-700 sm:h-10 sm:w-44 sm:rounded-none sm:border-0 sm:border-l sm:border-slate-200 sm:bg-transparent sm:py-0">
+                            <select class="h-full w-full bg-transparent text-sm leading-normal text-slate-700 focus:outline-none sm:h-10 sm:leading-10" name="category">
                                 <option value="">Todas categorias</option>
                                 @foreach (($headerCategories ?? collect()) as $category)
                                     <option value="{{ $category }}" {{ request('category') === $category ? 'selected' : '' }}>
@@ -126,8 +123,8 @@
                         </div>
                     </div>
                 </form>
-                <div class="hidden flex-wrap items-center justify-end gap-3 text-sm text-slate-600 md:flex md:justify-self-end">
-                    <a class="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-300 bg-amber-200 text-amber-700 hover:border-amber-400 hover:bg-amber-100" href="/carrinho" aria-label="Carrinho">
+                <div class="hidden items-center justify-end gap-3 text-sm text-slate-600 md:flex md:flex-nowrap md:justify-self-end">
+                    <a class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-300 bg-amber-200 text-amber-700 hover:border-amber-400 hover:bg-amber-100" href="/carrinho" aria-label="Carrinho">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="9" cy="20" r="1"></circle>
                             <circle cx="17" cy="20" r="1"></circle>
@@ -139,36 +136,35 @@
                             </span>
                         @endif
                     </a>
+                    <a class="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ $walletMenuHref }}">
+                        {{ $walletMenuLabel }}
+                    </a>
                     @auth
-                        @if (! auth()->user()->is_admin)
-                            <a class="rounded-full border border-slate-300 px-3 py-1 text-xs text-slate-700 hover:border-lime-300" href="{{ route('wallet.index') }}">
-                                Minha carteira
-                            </a>
-                        @endif
                         @if (auth()->user()->pharmacy)
-                            <a class="rounded-full border border-slate-300 px-3 py-1 text-xs text-slate-700 hover:border-lime-300" href="/farmacia">
+                            <a class="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="/farmacia">
                                 Minha Farmácia
                             </a>
                         @endif
                         @if (auth()->user()->pharmacy && auth()->user()->pharmacy->status === 'approved')
-                            <a class="rounded-full border border-slate-300 px-3 py-1 text-xs text-slate-700 hover:border-lime-300" href="{{ route('pharmacy.orders.index') }}">
-                                Pedidos
+                            <a class="inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-slate-300 bg-white/70 px-4 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('pharmacy.orders.index') }}">
+                                Registro
                             </a>
                         @endif
-                        @if (auth()->user()->is_admin)
-                            <x-admin-approval-bell :notifications="$adminHeaderNotifications" />
-                        @endif
-                        <x-notification-bell :notifications="$headerNotifications" />
-                        <span class="text-sm text-slate-500">Olá, {{ auth()->user()->name }}</span>
-                        <form method="POST" action="{{ route('logout') }}">
+                        <x-unified-notification-bell
+                            :pharmacy-notifications="$headerNotifications"
+                            :admin-notifications="$adminHeaderNotifications"
+                            :customer-notifications="$customerOrderNotifications"
+                        />
+                        <span class="inline-flex h-10 shrink-0 items-center whitespace-nowrap text-sm text-slate-500">Olá, {{ auth()->user()->name }}</span>
+                        <form class="shrink-0" method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button class="rounded-full border border-lime-300 bg-lime-400 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-lime-300" type="submit">
+                            <button class="inline-flex h-10 items-center rounded-full border border-lime-300 bg-lime-400 px-4 text-sm font-semibold text-slate-900 hover:bg-lime-300" type="submit">
                                 Sair
                             </button>
                         </form>
                     @else
-                        <a class="rounded-full border border-slate-300 px-4 py-2 text-sm hover:border-lime-400 hover:text-slate-900" href="/login">Entrar</a>
-                        <a class="rounded-full bg-lime-400 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-lime-300" href="/register">Criar conta</a>
+                        <a class="inline-flex h-10 shrink-0 items-center rounded-full border border-slate-300 px-4 text-sm hover:border-lime-400 hover:text-slate-900" href="/login">Entrar</a>
+                        <a class="inline-flex h-10 shrink-0 items-center rounded-full bg-lime-400 px-4 text-sm font-semibold text-slate-900 hover:bg-lime-300" href="/register">Criar conta</a>
                     @endauth
                 </div>
             </div>
@@ -188,27 +184,23 @@
                         </span>
                     </a>
                     @if ($showAdminHeaderLinks)
-                        <a class="hover:text-slate-900" href="{{ route('admin.reports.index') }}">Relat&oacute;rio</a>
-                        <a class="hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farmácias</a>
+                        <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('admin.reports.index') }}">Relat&oacute;rio</a>
+                        <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('storefront.pharmacies') }}">Farmácias</a>
                     @endif
-                    @if ($showCenterWalletLink)
-                        <a class="hover:text-slate-900" href="{{ $walletMenuHref }}">{{ $walletMenuLabel }}</a>
-                    @endif
+                    <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ $walletMenuHref }}">{{ $walletMenuLabel }}</a>
                     @auth
-                        @if (! auth()->user()->is_admin)
-                            <a class="hover:text-slate-900" href="{{ route('wallet.index') }}">Minha carteira</a>
-                        @endif
                         @if (auth()->user()->pharmacy)
-                            <a class="hover:text-slate-900" href="/farmacia">Minha Farmácia</a>
+                            <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="/farmacia">Minha Farmácia</a>
                         @endif
                         @if (auth()->user()->pharmacy && auth()->user()->pharmacy->status === 'approved')
-                            <a class="hover:text-slate-900" href="{{ route('pharmacy.orders.index') }}">Pedidos</a>
+                            <a class="inline-flex items-center rounded-full border border-slate-300 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-lime-300 hover:text-slate-900" href="{{ route('pharmacy.orders.index') }}">Registro</a>
                         @endif
                         <div class="flex items-center gap-3">
-                            @if (auth()->user()->is_admin)
-                                <x-admin-approval-bell :notifications="$adminHeaderNotifications" />
-                            @endif
-                            <x-notification-bell :notifications="$headerNotifications" />
+                            <x-unified-notification-bell
+                                :pharmacy-notifications="$headerNotifications"
+                                :admin-notifications="$adminHeaderNotifications"
+                                :customer-notifications="$customerOrderNotifications"
+                            />
                             <span class="text-slate-500">Olá, {{ auth()->user()->name }}</span>
                         </div>
                         <form method="POST" action="{{ route('logout') }}">
@@ -303,8 +295,41 @@
                 });
             </script>
         </header>
+        <div data-site-header-spacer aria-hidden="true"></div>
+        <script>
+            (() => {
+                const header = document.querySelector('[data-site-header]');
+                const spacer = document.querySelector('[data-site-header-spacer]');
+                if (!header || !spacer) {
+                    return;
+                }
 
-        <main class="px-6 pb-16">
+                const syncHeaderSpacer = () => {
+                    spacer.style.height = `${Math.ceil(header.getBoundingClientRect().height || header.offsetHeight || 0)}px`;
+                };
+
+                syncHeaderSpacer();
+                window.addEventListener('resize', syncHeaderSpacer);
+
+                if (window.ResizeObserver) {
+                    new ResizeObserver(syncHeaderSpacer).observe(header);
+                }
+            })();
+        </script>
+
+        <section class="px-6 pt-4">
+            <div class="mx-auto max-w-6xl">
+                <div class="glass rounded-2xl px-4 py-3 sm:px-5">
+                    <div class="flex flex-wrap items-center gap-2 text-sm text-slate-600">
+                        <a class="hover:text-slate-900" href="/">Início</a>
+                        <span class="text-slate-400">/</span>
+                        <span class="font-semibold text-slate-900">{{ $pageLabel }}</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <main class="px-6 pb-16 pt-4">
             <section class="mx-auto grid max-w-6xl gap-10 md:grid-cols-[1.1fr_0.9fr]">
                 <div class="space-y-6">
                     <p class="inline-flex items-center gap-2 rounded-full bg-lime-500/10 px-4 py-2 text-sm text-lime-700">
@@ -470,6 +495,7 @@
                             $name = data_get($product, 'name', 'Produto');
                             $price = data_get($product, 'price', 0);
                             $category = data_get($product, 'category', 'Oferta especial');
+                            $soldCount = (int) data_get($product, 'sold_quantity', 0);
                             $productId = data_get($product, 'id');
                             $detailUrl = $productId ? route('storefront.show', $productId) : url('/produtos');
                         @endphp
@@ -479,13 +505,99 @@
                             </div>
                             <p class="text-sm text-slate-500">{{ $name }}</p>
                             <p class="text-2xl font-semibold text-slate-900">Kz {{ number_format($price, 2, ',', '.') }}</p>
-                            <p class="mt-1 text-sm text-slate-500">
-                                Farmácia: {{ data_get($product, 'pharmacy.name') ?? 'Farmácia parceira' }}
-                            </p>
+                            <div class="mt-1 flex items-center justify-between gap-2">
+                                <p class="text-sm text-slate-500">
+                                    Farmácia: {{ data_get($product, 'pharmacy.name') ?? 'Farmácia parceira' }}
+                                </p>
+                                @if ($soldCount > 0)
+                                    <p class="shrink-0 text-sm font-semibold uppercase tracking-[0.06em] text-lime-600">
+                                        {{ $soldCount }} vendidos
+                                    </p>
+                                @endif
+                            </div>
                             <p class="text-xs text-lime-700">{{ $category }}</p>
                             <a class="mt-4 block w-full rounded-2xl border border-slate-300 py-2 text-center text-sm hover:border-lime-300" href="{{ $detailUrl }}">Ver detalhes</a>
                         </div>
                     @endforeach
+                </div>
+            </section>
+
+            <section id="categorias" class="mx-auto mt-16 max-w-6xl">
+                <div class="flex flex-wrap items-end justify-between gap-4">
+                    <div>
+                        <p class="text-sm uppercase tracking-[0.2em] text-lime-700">Explorar categorias</p>
+                        <h2 class="brand-title text-4xl text-slate-900">Produtos por categoria</h2>
+                    </div>
+                    <a class="text-sm text-slate-600 hover:text-slate-900" href="{{ route('storefront.index') }}">
+                        Ver cat&aacute;logo completo
+                    </a>
+                </div>
+
+                @php
+                    $productsByCategory = $productsByCategory ?? collect();
+                    $categoryGroups = $productsByCategory;
+
+                    if ($categoryGroups->isEmpty()) {
+                        $categoryGroups = collect($cards ?? [])
+                            ->groupBy(fn ($product) => data_get($product, 'category', 'Sem categoria'))
+                            ->map(fn ($items) => collect($items)->take(4)->values())
+                            ->take(4);
+                    }
+                @endphp
+
+                <div class="mt-8 space-y-6">
+                    @forelse ($categoryGroups as $categoryName => $items)
+                        <div class="glass rounded-3xl p-5 sm:p-6">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="inline-flex h-2.5 w-2.5 rounded-full bg-lime-400"></span>
+                                    <h3 class="text-xl font-semibold text-slate-900">{{ $categoryName ?: 'Sem categoria' }}</h3>
+                                </div>
+                                <a class="rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-700 hover:border-lime-300" href="{{ route('storefront.index', ['category' => $categoryName]) }}">
+                                    Ver todos
+                                </a>
+                            </div>
+
+                            <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                @foreach ($items as $product)
+                                    @php
+                                        $imagePath = data_get($product, 'image_url') ?: 'images/products/placeholder.svg';
+                                        $imageUrl = str_starts_with($imagePath, 'http') || str_starts_with($imagePath, '/')
+                                            ? $imagePath
+                                            : asset($imagePath);
+                                        $name = data_get($product, 'name', 'Produto');
+                                        $price = (float) data_get($product, 'price', 0);
+                                        $soldCount = (int) data_get($product, 'sold_quantity', 0);
+                                        $productId = data_get($product, 'id');
+                                        $detailUrl = $productId ? route('storefront.show', $productId) : url('/produtos');
+                                    @endphp
+
+                                    <div class="rounded-2xl border border-slate-200 bg-white/80 p-3">
+                                        <div class="rounded-xl border border-slate-100 bg-white p-2">
+                                            <img class="h-24 w-full object-contain" src="{{ $imageUrl }}" alt="Imagem de {{ $name }}" loading="lazy" />
+                                        </div>
+                                        <p class="mt-3 line-clamp-2 text-sm font-medium text-slate-900">{{ $name }}</p>
+                                        <p class="mt-1 text-lg font-semibold text-slate-900">Kz {{ number_format($price, 2, ',', '.') }}</p>
+                                        <div class="mt-1 flex items-center justify-between gap-3">
+                                            <p class="line-clamp-1 text-xs text-slate-500">
+                                                {{ data_get($product, 'pharmacy.name') ?? 'Farm&aacute;cia parceira' }}
+                                            </p>
+                                            <p class="shrink-0 text-sm font-semibold text-lime-600">
+                                                {{ $soldCount }} {{ $soldCount === 1 ? 'Vendido' : 'Vendidos' }}
+                                            </p>
+                                        </div>
+                                        <a class="mt-3 inline-flex rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-lime-300" href="{{ $detailUrl }}">
+                                            Ver produto
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @empty
+                        <div class="glass rounded-3xl p-6">
+                            <p class="text-sm text-slate-600">Ainda n&atilde;o existem produtos suficientes para listar por categoria.</p>
+                        </div>
+                    @endforelse
                 </div>
             </section>
 

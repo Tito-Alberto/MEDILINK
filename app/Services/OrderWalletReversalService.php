@@ -15,7 +15,7 @@ class OrderWalletReversalService
             ->where('related_type', 'order')
             ->where('related_id', $order->id)
             ->where('status', 'posted')
-            ->whereIn('category', ['pharmacy_sale', 'system_fee', 'system_sale', 'customer_purchase'])
+            ->whereIn('category', ['pharmacy_sale', 'system_fee', 'system_sale', 'customer_purchase', 'delivery_fee'])
             ->orderBy('id')
             ->get();
 
@@ -86,6 +86,7 @@ class OrderWalletReversalService
             'system_fee' => 'reversal_system_fee',
             'system_sale' => 'reversal_system_sale',
             'customer_purchase' => 'reversal_customer_purchase',
+            'delivery_fee' => 'reversal_delivery_fee',
             default => 'reversal',
         };
     }
@@ -104,6 +105,7 @@ class OrderWalletReversalService
             'system_fee' => 'comissão do sistema',
             'system_sale' => 'venda do sistema',
             'customer_purchase' => 'pagamento do cliente com carteira',
+            'delivery_fee' => 'taxa de entrega',
             default => 'lançamento do pedido',
         };
 

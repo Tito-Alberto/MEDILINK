@@ -48,6 +48,11 @@
                 <p class="mt-3 text-sm text-slate-600">
                     Para finalizar compras ou salvar seu carrinho, faca login com seu email.
                 </p>
+                @if (session('status'))
+                    <div class="mt-6 rounded-2xl border border-lime-400/30 bg-lime-500/10 p-4 text-sm text-lime-700">
+                        {{ session('status') }}
+                    </div>
+                @endif
                 @if ($errors->any())
                     <div class="mt-6 rounded-2xl border border-rose-400/30 bg-rose-500/10 p-4 text-sm text-rose-700">
                         <p class="font-semibold">Confira seus dados:</p>

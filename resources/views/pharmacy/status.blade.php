@@ -11,9 +11,16 @@
                     Acompanhe o status do cadastro da sua Farmácia.
                 </p>
             </div>
-            <a class="rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-lime-300" href="/produtos">
-                Ver produtos
-            </a>
+            <div class="flex flex-wrap items-center gap-3">
+                @if ($pharmacy)
+                    <a class="rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-lime-300" href="{{ route('pharmacy.edit') }}">
+                        Editar Farmácia
+                    </a>
+                @endif
+                <a class="rounded-full border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:border-lime-300" href="/produtos">
+                    Ver produtos
+                </a>
+            </div>
         </div>
 
         @if (! $pharmacy)
